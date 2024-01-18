@@ -1,5 +1,7 @@
 package chess;
 
+import java.lang.reflect.Array;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -9,7 +11,7 @@ package chess;
 public class ChessBoard {
 
     public ChessBoard() {
-        
+
     }
 
     /**
