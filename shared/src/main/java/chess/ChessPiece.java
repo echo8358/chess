@@ -23,6 +23,14 @@ public class ChessPiece {
         this.pieceType = type;
     }
 
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "teamColor=" + teamColor +
+                ", pieceType=" + pieceType +
+                '}';
+    }
+
     /**
      * The various different chess piece options
      */
@@ -78,6 +86,56 @@ public class ChessPiece {
                 for(int i = 1; i < 8; i++) {
                     if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break;
                 }
+                break;
+            case QUEEN:
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, i, i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, -i, i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, i, -i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break;
+                }
+                break;
+            case ROOK:
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break;
+                }
+                for(int i = 1; i < 8; i++) {
+                    if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break;
+                }
+                break;
+            case KNIGHT:
+                checkAndAddMove(board, moves, myPosition, 1, 2);
+                checkAndAddMove(board, moves, myPosition, 2, 1);
+                checkAndAddMove(board, moves, myPosition, -1, 2);
+                checkAndAddMove(board, moves, myPosition, -2, 1);
+                checkAndAddMove(board, moves, myPosition, 1, -2);
+                checkAndAddMove(board, moves, myPosition, 2, -1);
+                checkAndAddMove(board, moves, myPosition, -1, -2);
+                checkAndAddMove(board, moves, myPosition, -2, -1);
                 break;
         }
         return moves;
