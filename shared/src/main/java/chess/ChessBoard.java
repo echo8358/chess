@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] board;
+    private final ChessPiece[][] board;
     public ChessBoard() {
         board = new ChessPiece[8][8];
     }
