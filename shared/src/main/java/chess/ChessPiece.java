@@ -72,58 +72,26 @@ public class ChessPiece {
                 break;
 
             case BISHOP:
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, -i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break;
-                }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, -i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break; }
                 break;
             case QUEEN:
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, -i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break;
-                }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, -i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, -i) == 1) break; }
                 break;
             case ROOK:
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break;
-                }
-                for(int i = 1; i < 8; i++) {
-                    if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break;
-                }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, 0, i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, 0, -i) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, i, 0) == 1) break; }
+                for(int i = 1; i < 8; i++) { if (checkAndAddMove(board, moves, myPosition, -i, 0) == 1) break; }
                 break;
             case KNIGHT:
                 checkAndAddMove(board, moves, myPosition, 1, 2);
@@ -200,18 +168,17 @@ public class ChessPiece {
 
     private int checkAndAddMove(ChessBoard board, HashSet<ChessMove> moves, ChessPosition myPosition, int x, int y)
     {
-        if(myPosition.getRow()+y >=1 && myPosition.getRow()+y <= 8 && myPosition.getColumn()+x >= 1 && myPosition.getColumn()+x <= 8)
+        ChessPosition targetPos = new ChessPosition(myPosition.getRow()+y, myPosition.getColumn()+x);
+        if(targetPos.getRow() >= 1 && targetPos.getRow() <= 8 && targetPos.getColumn() >= 1 && targetPos.getColumn() <= 8)
         {
-            ChessPiece targetPiece = board.getPiece(new ChessPosition(myPosition.getRow()+y, myPosition.getColumn()+x));
+            ChessPiece targetPiece = board.getPiece(targetPos);
             if(targetPiece == null || targetPiece.getTeamColor() != teamColor)
             {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+y, myPosition.getColumn()+x), null));
-                if (targetPiece != null) {return 1;}
-                else {return 0;}
+                moves.add(new ChessMove(myPosition, targetPos, null));
+                if (targetPiece == null) {return 0;}
             }
-            return 1;
         }
-        return 0;
+        return 1;
     }
 
     @Override

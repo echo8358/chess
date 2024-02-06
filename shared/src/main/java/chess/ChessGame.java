@@ -10,25 +10,26 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    private ChessBoard board;
+    private TeamColor teamTurn;
     public ChessGame() {
+        board = new ChessBoard();
+        board.resetBoard();
 
+        teamTurn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
-    public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
-    }
+    public TeamColor getTeamTurn() { return teamTurn; }
 
     /**
      * Set's which teams turn it is
      *
      * @param team the team whose turn it is
      */
-    public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
-    }
+    public void setTeamTurn(TeamColor team) { teamTurn = team; }
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -66,7 +67,39 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPos = getKingPos(teamColor);
+        if(kingPos != null) { //should never be false, but just in case
+            for(int y = 1; y <= 8; y++) {
+                for(int x = 1; x <= 8; x++) {
+                    ChessPiece targetPiece = board.getPiece(new ChessPosition(y, x));
+                    if( targetPiece != null && targetPiece.getTeamColor()!=teamColor ) {
+                        for(ChessMove move: targetPiece.pieceMoves(board, new ChessPosition(y, x))) {
+                            if(move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private ChessPosition getKingPos(TeamColor teamColor)
+    {
+        ChessPiece tempPiece;
+        ChessPosition targetPos;
+        for (int y = 1; y <= 8; y++) {
+            for (int x = 1; x <= 8; x++) {
+                targetPos = new ChessPosition(y, x);
+                tempPiece = board.getPiece(new ChessPosition(y, x));
+                if( tempPiece != null && tempPiece.getTeamColor() == teamColor &&
+                        tempPiece.getPieceType() == ChessPiece.PieceType.KING){
+                    return targetPos;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -96,7 +129,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +138,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
