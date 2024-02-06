@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Stack;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -12,11 +13,14 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+    private final Stack<HistoricalMove> historyStack;
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
 
         teamTurn = TeamColor.WHITE;
+
+        historyStack = new Stack<HistoricalMove>();
     }
 
     /**
@@ -57,7 +61,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        historyStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
+    }
+
+    public void unmakeMove() {
+        HistoricalMove lastMove = historyStack.pop();
+        if(lastMove != null) {
+            board.addPiece(lastMove.move().getStartPosition(), lastMove.movedPiece());
+            board.addPiece(lastMove.move().getEndPosition(), lastMove.targetPiece());
+        }
     }
 
     /**
