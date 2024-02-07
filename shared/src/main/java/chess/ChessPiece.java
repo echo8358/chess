@@ -147,6 +147,12 @@ public class ChessPiece {
                             moves.add(new ChessMove(myPosition, targetPos, null));
                         }
                     }
+                    //en passant
+                    ChessMove lastMove = ChessGame.getLastMove();
+                    if (board.getPiece(targetPos) == null && lastMove != null && lastMove.getEndPosition().getRow() == myPosition.getRow()
+                           && lastMove.getEndPosition().getColumn() == myPosition.getColumn()+1) {
+                        moves.add(new ChessMove(myPosition, targetPos, null, ChessMove.MoveType.EN_PASSANT));
+                    }
                 }
                 if(myPosition.getColumn() > 1) {
                     targetPos = new ChessPosition(myPosition.getRow() + dir, myPosition.getColumn() - 1);
@@ -160,6 +166,12 @@ public class ChessPiece {
                         } else {
                             moves.add(new ChessMove(myPosition, targetPos, null));
                         }
+                    }
+                    //en passant
+                    ChessMove lastMove = ChessGame.getLastMove();
+                    if (board.getPiece(targetPos) == null && lastMove != null && lastMove.getEndPosition().getRow() == myPosition.getRow()
+                            && lastMove.getEndPosition().getColumn() == myPosition.getColumn()-1) {
+                        moves.add(new ChessMove(myPosition, targetPos, null, ChessMove.MoveType.EN_PASSANT));
                     }
                 }
                 break;

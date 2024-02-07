@@ -14,14 +14,15 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
-    private final Stack<HistoricalMove> historyStack;
+    private final Stack<HistoricalMove> tryStack;
+    private static final Stack<HistoricalMove> historyStack = new Stack<HistoricalMove>();
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
 
         teamTurn = TeamColor.WHITE;
 
-        historyStack = new Stack<HistoricalMove>();
+        tryStack = new Stack<HistoricalMove>();
     }
 
     /**
@@ -80,26 +81,43 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if(board.getPiece(move.getStartPosition()) != null && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurn &&
             validMoves(move.getStartPosition()) != null && validMoves(move.getStartPosition()).contains(move)) {
+                historyStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
                 if(move.getPromotionPiece() == null) {
                     board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
                 } else {
                     board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
                 }
                 board.addPiece(move.getStartPosition(), null);
+                if(move.getSpecialType() == ChessMove.MoveType.EN_PASSANT)
+                {
+                    if(teamTurn == TeamColor.WHITE) {
+                        board.addPiece(new ChessPosition(move.getEndPosition().getRow()+1, move.getEndPosition().getColumn()),null);
+                    }
+                    if(teamTurn == TeamColor.BLACK) {
+                        board.addPiece(new ChessPosition(move.getEndPosition().getRow()-1, move.getEndPosition().getColumn()),null);
+                    }
+                }
                 if(teamTurn == TeamColor.WHITE) { teamTurn = TeamColor.BLACK; } else { teamTurn = TeamColor.WHITE; }
             } else {
                 throw new InvalidMoveException("Invalid Move!");
             }
     }
 
+    public static ChessMove getLastMove() {
+        if(historyStack.empty()) {
+            return null;
+        }
+        return historyStack.peek().move();
+    }
+
     public void tryMove(ChessMove move) {
-        historyStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
+        tryStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         board.addPiece(move.getStartPosition(), null);
     }
 
     public void untryMove() {
-        HistoricalMove lastMove = historyStack.pop();
+        HistoricalMove lastMove = tryStack.pop();
         if(lastMove != null) {
             board.addPiece(lastMove.move().getStartPosition(), lastMove.movedPiece());
             board.addPiece(lastMove.move().getEndPosition(), lastMove.targetPiece());
