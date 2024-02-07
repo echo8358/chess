@@ -14,27 +14,13 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
-    private final MoveType specialType;
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
-        this.specialType = MoveType.NORMAL;
-    }
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece, MoveType specialType) {
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = promotionPiece;
-        this.specialType = specialType;
     }
 
-    public enum MoveType {
-        NORMAL,
-        EN_PASSANT,
-        CASTLE
-    }
 
     /**
      * @return ChessPosition of starting location
@@ -59,8 +45,6 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
-
-    public MoveType getSpecialType() { return specialType; }
 
     @Override
     public boolean equals(Object o) {

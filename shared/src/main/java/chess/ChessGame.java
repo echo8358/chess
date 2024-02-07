@@ -17,14 +17,14 @@ public class ChessGame {
     private ChessBoard board;
     private TeamColor teamTurn;
     private final Stack<HistoricalMove> tryStack;
-    private static final Stack<HistoricalMove> historyStack = new Stack<HistoricalMove>();
+    private static final Stack<HistoricalMove> historyStack = new Stack<>();
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
 
         teamTurn = TeamColor.WHITE;
 
-        tryStack = new Stack<HistoricalMove>();
+        tryStack = new Stack<>();
     }
 
     /**
@@ -81,31 +81,35 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(board.getPiece(move.getStartPosition()) != null && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurn &&
+        if(board.getPiece(move.getStartPosition()) != null && board.getPiece(move.getStartPosition()).getTeamColor() == getTeamTurn() &&
             validMoves(move.getStartPosition()) != null && validMoves(move.getStartPosition()).contains(move)) {
                 ChessMove lastMove = getLastMove();
                 historyStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
+
+                //normal moves
                 if(move.getPromotionPiece() == null) {
                     board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
                 } else {
-                    board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
+                    board.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
                 }
                 board.addPiece(move.getStartPosition(), null);
 
+                //en passant
                 if(lastMove != null && abs(lastMove.getStartPosition().getRow()-lastMove.getEndPosition().getRow()) > 1
                         && board.getPiece(lastMove.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN
                         && board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN)
                 {
-                    if(teamTurn == TeamColor.WHITE && move.getEndPosition().getRow()-1 == lastMove.getEndPosition().getRow()
+                    if(getTeamTurn() == TeamColor.WHITE && move.getEndPosition().getRow()-1 == lastMove.getEndPosition().getRow()
                             && move.getEndPosition().getColumn() == lastMove.getEndPosition().getColumn()) {
                         board.addPiece(lastMove.getEndPosition(),null);
                     }
-                    if(teamTurn == TeamColor.BLACK && move.getEndPosition().getRow()+1 == lastMove.getEndPosition().getRow()
+                    if(getTeamTurn() == TeamColor.BLACK && move.getEndPosition().getRow()+1 == lastMove.getEndPosition().getRow()
                             && move.getEndPosition().getColumn() == lastMove.getEndPosition().getColumn()) {
                         board.addPiece(lastMove.getEndPosition(),null);
                     }
                 }
-                if(teamTurn == TeamColor.WHITE) { teamTurn = TeamColor.BLACK; } else { teamTurn = TeamColor.WHITE; }
+                //switch turns
+                if(getTeamTurn() == TeamColor.WHITE) { setTeamTurn(TeamColor.BLACK); } else { setTeamTurn(TeamColor.WHITE); }
             } else {
                 throw new InvalidMoveException("Invalid Move!");
             }
