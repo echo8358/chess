@@ -151,7 +151,7 @@ public class ChessPiece {
                     ChessMove lastMove = ChessGame.getLastMove();
                     if (board.getPiece(targetPos) == null && lastMove != null && lastMove.getEndPosition().getRow() == myPosition.getRow()
                            && lastMove.getEndPosition().getColumn() == myPosition.getColumn()+1) {
-                        moves.add(new ChessMove(myPosition, targetPos, null, ChessMove.MoveType.EN_PASSANT));
+                        moves.add(new ChessMove(myPosition, targetPos, null ));
                     }
                 }
                 if(myPosition.getColumn() > 1) {
@@ -171,7 +171,7 @@ public class ChessPiece {
                     ChessMove lastMove = ChessGame.getLastMove();
                     if (board.getPiece(targetPos) == null && lastMove != null && lastMove.getEndPosition().getRow() == myPosition.getRow()
                             && lastMove.getEndPosition().getColumn() == myPosition.getColumn()-1) {
-                        moves.add(new ChessMove(myPosition, targetPos, null, ChessMove.MoveType.EN_PASSANT));
+                        moves.add(new ChessMove(myPosition, targetPos, null));
                     }
                 }
                 break;

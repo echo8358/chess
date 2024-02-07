@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Stack;
 
+import static java.lang.Math.abs;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -81,6 +83,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if(board.getPiece(move.getStartPosition()) != null && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurn &&
             validMoves(move.getStartPosition()) != null && validMoves(move.getStartPosition()).contains(move)) {
+                ChessMove lastMove = getLastMove();
                 historyStack.push(new HistoricalMove(board.getPiece(move.getStartPosition()), move, board.getPiece(move.getEndPosition())));
                 if(move.getPromotionPiece() == null) {
                     board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
@@ -88,13 +91,18 @@ public class ChessGame {
                     board.addPiece(move.getEndPosition(), new ChessPiece(teamTurn, move.getPromotionPiece()));
                 }
                 board.addPiece(move.getStartPosition(), null);
-                if(move.getSpecialType() == ChessMove.MoveType.EN_PASSANT)
+
+                if(lastMove != null && abs(lastMove.getStartPosition().getRow()-lastMove.getEndPosition().getRow()) > 1
+                        && board.getPiece(lastMove.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN
+                        && board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN)
                 {
-                    if(teamTurn == TeamColor.WHITE) {
-                        board.addPiece(new ChessPosition(move.getEndPosition().getRow()+1, move.getEndPosition().getColumn()),null);
+                    if(teamTurn == TeamColor.WHITE && move.getEndPosition().getRow()-1 == lastMove.getEndPosition().getRow()
+                            && move.getEndPosition().getColumn() == lastMove.getEndPosition().getColumn()) {
+                        board.addPiece(lastMove.getEndPosition(),null);
                     }
-                    if(teamTurn == TeamColor.BLACK) {
-                        board.addPiece(new ChessPosition(move.getEndPosition().getRow()-1, move.getEndPosition().getColumn()),null);
+                    if(teamTurn == TeamColor.BLACK && move.getEndPosition().getRow()+1 == lastMove.getEndPosition().getRow()
+                            && move.getEndPosition().getColumn() == lastMove.getEndPosition().getColumn()) {
+                        board.addPiece(lastMove.getEndPosition(),null);
                     }
                 }
                 if(teamTurn == TeamColor.WHITE) { teamTurn = TeamColor.BLACK; } else { teamTurn = TeamColor.WHITE; }
