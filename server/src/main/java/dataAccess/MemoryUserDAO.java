@@ -7,16 +7,16 @@ import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO {
 
-    ArrayList<UserData> userList;
+    static ArrayList<UserData> userList = new ArrayList<UserData>();
     @Override
     public void clear() {
         userList.clear();
     }
 
     @Override
-    public void createUser(String username, String password, String email) throws DataAccessException {
-        if (getUser(username) != null) { throw new DataAccessException("User already exists."); }
-        userList.add(new UserData(username, password, email));
+    public void createUser(UserData user) throws AlreadyTakenException{
+        if (getUser(user.username()) != null) throw new AlreadyTakenException("Error: already taken");
+        userList.add(user);
     }
 
     @Override

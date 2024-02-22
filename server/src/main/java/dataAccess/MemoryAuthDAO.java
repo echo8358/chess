@@ -7,10 +7,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
-    ArrayList<AuthData> authList;
+    static ArrayList<AuthData> authList = new ArrayList<AuthData>();
     @Override
-    public AuthData createAuth(String username) throws DataAccessException{
-        if (getAuthFromUsername(username) != null) { throw new DataAccessException("User already registered."); }
+    public void clear() { authList.clear(); }
+    @Override
+    public AuthData createAuth(String username) {
         AuthData newAuth = new AuthData(UUID.randomUUID().toString(),username);
         authList.add(newAuth);
         return newAuth;
@@ -33,4 +34,5 @@ public class MemoryAuthDAO implements AuthDAO{
         }
         return null;
     }
+
 }

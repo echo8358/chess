@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
-    ArrayList<GameData> gameList;
+    static ArrayList<GameData> gameList = new ArrayList<GameData>();
     int nextID = 0;
     @Override
     public void clear() {
@@ -47,4 +47,5 @@ public class MemoryGameDAO implements GameDAO{
             }
         }
     }
+
 }

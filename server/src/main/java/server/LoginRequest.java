@@ -1,4 +1,3 @@
 package server;
 
-public class LoginRequest {
-}
+public record LoginRequest(String username, String password, String email) {}
