@@ -12,6 +12,12 @@ public class MemoryAuthDAO implements AuthDAO{
     public void clear() { authList.clear(); }
     @Override
     public AuthData createAuth(String username) {
+        for (int i = 0; i < authList.size(); i++) {
+           if (Objects.equals(authList.get(i).username(), username)) {
+               authList.set(i, new AuthData(UUID.randomUUID().toString(),username));
+               return authList.get(i);
+           }
+        }
         AuthData newAuth = new AuthData(UUID.randomUUID().toString(),username);
         authList.add(newAuth);
         return newAuth;

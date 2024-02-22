@@ -1,4 +1,4 @@
-package server;
+package server.Register;
 
 import model.AuthData;
 import model.UserData;
