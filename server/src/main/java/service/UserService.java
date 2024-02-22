@@ -5,6 +5,8 @@ import model.AuthData;
 import model.UserData;
 import server.Login.LoginRequest;
 import server.Login.LoginResponse;
+import server.Logout.LogoutRequest;
+import server.Logout.LogoutResponse;
 import server.Register.RegisterRequest;
 import server.Register.RegisterResponse;
 
@@ -27,11 +29,17 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        AuthData newAuthData;
         UserData reqUser = userDAO.getUser(loginRequest.username());
         if (reqUser == null || !Objects.equals(reqUser.password(), loginRequest.password())) {
            return new LoginResponse(null, 401, "Error: unauthorized");
         }
         return new LoginResponse(authDAO.createAuth(loginRequest.username()), 200, null);
+    }
+    public LogoutResponse logout(LogoutRequest logoutRequest) {
+        if (authDAO.getAuthFromToken(logoutRequest.AuthToken()) == null) {
+            return new LogoutResponse(401, "Error: unauthorized");
+        }
+        authDAO.deleteAuth(logoutRequest.AuthToken());
+        return new LogoutResponse(200, null);
     }
 }
