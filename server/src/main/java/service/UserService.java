@@ -16,30 +16,26 @@ public class UserService {
     static UserDAO userDAO = new MemoryUserDAO();
     static AuthDAO authDAO = new MemoryAuthDAO();
 
-    public RegisterResponse register(RegisterRequest registerRequest) {
+    public RegisterResponse register(RegisterRequest registerRequest) throws AlreadyTakenException {
         AuthData newAuthData;
         UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-        try {
-            userDAO.createUser(user);
-            newAuthData = authDAO.createAuth(user.username());
-        } catch (AlreadyTakenException e) {
-            return new RegisterResponse(null, 403, e.getMessage());
-        }
-        return new RegisterResponse(newAuthData, 200, null);
+        userDAO.createUser(user);
+        newAuthData = authDAO.createAuth(user.username());
+        return new RegisterResponse(newAuthData);
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) throws UnauthorizedException{
         UserData reqUser = userDAO.getUser(loginRequest.username());
         if (reqUser == null || !Objects.equals(reqUser.password(), loginRequest.password())) {
-           return new LoginResponse(null, 401, "Error: unauthorized");
+            throw new UnauthorizedException("Error: unauthorized");
         }
-        return new LoginResponse(authDAO.createAuth(loginRequest.username()), 200, null);
+        return new LoginResponse(authDAO.createAuth(loginRequest.username()));
     }
-    public LogoutResponse logout(LogoutRequest logoutRequest) {
+    public LogoutResponse logout(LogoutRequest logoutRequest) throws UnauthorizedException {
         if (authDAO.getAuthFromToken(logoutRequest.AuthToken()) == null) {
-            return new LogoutResponse(401, "Error: unauthorized");
+            throw new UnauthorizedException("Error: unauthorized");
         }
         authDAO.deleteAuth(logoutRequest.AuthToken());
-        return new LogoutResponse(200, null);
+        return new LogoutResponse();
     }
 }

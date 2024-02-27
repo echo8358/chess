@@ -1,6 +1,8 @@
 package server.Login;
 
 import com.google.gson.Gson;
+import dataAccess.AlreadyTakenException;
+import dataAccess.UnauthorizedException;
 import server.Register.RegisterRequest;
 import server.Register.RegisterResponse;
 import service.UserService;
@@ -18,12 +20,13 @@ public class LoginHandler {
             return "{ \"message\" : \"Error: bad request\" }";
         }
 
-        LoginResponse loginResponse = (new UserService()).login(loginRequest);
-        res.status(loginResponse.statusCode());
-        if (loginResponse.auth() != null) {
+        try {
+            LoginResponse loginResponse = (new UserService()).login(loginRequest);
+            res.status(200);
             return gson.toJson(loginResponse.auth());
-        } else {
-            return "{ \"message\" : \"" + loginResponse.message() + "\" }";
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            return "{ \"message\" : \"Error: unauthorized\" }";
         }
     }
 }

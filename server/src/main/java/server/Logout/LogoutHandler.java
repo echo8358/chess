@@ -1,6 +1,7 @@
 package server.Logout;
 
 import com.google.gson.Gson;
+import dataAccess.UnauthorizedException;
 import server.Login.LoginRequest;
 import server.Login.LoginResponse;
 import service.UserService;
@@ -17,12 +18,13 @@ public class LogoutHandler {
             return "{ \"message\" : \"Error: bad request\" }";
         }
 
-        LogoutResponse logoutResponse = (new UserService()).logout(logoutRequest);
-        res.status(logoutResponse.statusCode());
-        if (logoutResponse.message() == null) {
+        try {
+            LogoutResponse logoutResponse = (new UserService()).logout(logoutRequest);
+            res.status(200);
             return "";
-        } else {
-            return "{ \"message\" : \"" + logoutResponse.message() + "\" }";
+        } catch (UnauthorizedException e){
+            res.status(401);
+            return "{ \"message\" : \"Error: unauthorized\" }";
         }
     }
 }

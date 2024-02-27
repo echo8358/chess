@@ -1,6 +1,7 @@
 package server.Register;
 
 import com.google.gson.Gson;
+import dataAccess.AlreadyTakenException;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -16,12 +17,13 @@ public class RegisterHandler {
             return "{ \"message\" : \"Error: bad request\" }";
         }
 
-        RegisterResponse registerResponse = (new UserService()).register(registerRequest);
-        res.status(registerResponse.statusCode());
-        if (registerResponse.auth() != null) {
+        try {
+            RegisterResponse registerResponse = (new UserService()).register(registerRequest);
+            res.status(200);
             return gson.toJson(registerResponse.auth());
-        } else {
-            return "{ \"message\" : \"" + registerResponse.message() + "\" }";
+        } catch (AlreadyTakenException e) {
+            res.status(403);
+            return "{ \"message\" : \"Error: already taken\" }";
         }
     }
 }
