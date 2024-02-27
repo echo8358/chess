@@ -3,7 +3,7 @@ package dataAccess;
 import chess.ChessGame;
 import model.GameData;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface GameDAO {
 
@@ -13,7 +13,7 @@ public interface GameDAO {
 
     GameData getGame(int gameID);
 
-    List<GameData> listGames();
+    ArrayList<GameData> listGames();
 
     void updateGame(int gameID, ChessGame game);
 

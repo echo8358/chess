@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public List<GameData> listGames() {
+    public ArrayList<GameData> listGames() {
         //this doesn't copy the elements in the list
         //TODO: Fix this
         return new ArrayList<GameData>(gameList);

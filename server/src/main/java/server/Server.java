@@ -1,5 +1,7 @@
 package server;
 
+import server.CreateGame.CreateGameHandler;
+import server.ListGame.ListGameHandler;
 import server.Login.LoginHandler;
 import server.Logout.LogoutHandler;
 import server.Register.RegisterHandler;
@@ -25,6 +27,8 @@ public class Server {
         post("/user", (req, res) ->  (new RegisterHandler()).handle(req, res) );
         post("/session", (req, res) ->  (new LoginHandler()).handle(req, res) );
         delete("/session", (req, res) ->  (new LogoutHandler()).handle(req, res) );
+        get("/game", (req, res) ->  (new ListGameHandler()).handle(req, res) );
+        post("/game", (req, res) ->  (new CreateGameHandler()).handle(req, res) );
 
 
         Spark.awaitInitialization();
