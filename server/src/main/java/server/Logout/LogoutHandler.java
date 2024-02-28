@@ -10,7 +10,7 @@ public class LogoutHandler {
         LogoutRequest logoutRequest = new LogoutRequest(req.headers("authorization"));
 
         //invalid requests
-        if (logoutRequest.AuthToken() == null) {
+        if (logoutRequest.authToken() == null) {
             res.status(400);
             return "{ \"message\" : \"Error: bad request\" }";
         }

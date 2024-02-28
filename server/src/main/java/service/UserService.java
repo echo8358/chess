@@ -34,10 +34,10 @@ public class UserService {
         return new LoginResponse(authDAO.createAuth(loginRequest.username()));
     }
     public LogoutResponse logout(LogoutRequest logoutRequest) throws UnauthorizedException {
-        if (authDAO.getAuthFromToken(logoutRequest.AuthToken()) == null) {
+        if (authDAO.getAuthFromToken(logoutRequest.authToken()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
-        authDAO.deleteAuth(logoutRequest.AuthToken());
+        authDAO.deleteAuth(logoutRequest.authToken());
         return new LogoutResponse();
     }
 }
