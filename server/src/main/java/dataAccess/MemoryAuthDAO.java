@@ -53,4 +53,8 @@ public class MemoryAuthDAO implements AuthDAO{
         }
     }
 
+    public ArrayList<AuthData> listAuth() {
+        return new ArrayList<AuthData>(authList);
+    }
+
 }

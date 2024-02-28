@@ -12,6 +12,8 @@ import passoffTests.testClasses.TestModels;
 import server.CreateGame.CreateGameRequest;
 import server.CreateGame.CreateGameResponse;
 import server.JoinGame.JoinGameRequest;
+import server.ListGame.ListGameRequest;
+import server.ListGame.ListGameResponse;
 import server.Login.LoginRequest;
 import server.Login.LoginResponse;
 import server.Logout.LogoutRequest;
@@ -23,10 +25,7 @@ import service.GameService;
 import service.UserService;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -235,15 +234,78 @@ public class ServiceTests {
         CreateGameResponse createGameResponse = gameService.createGame(new CreateGameRequest("game1", echoResponse.auth().authToken() ));
 
         gameService.joinGame(new JoinGameRequest("BLACK", createGameResponse.gameID(), echoResponse.auth().authToken()));
-        assertThrows(BadRequestException.class, () -> {
-            gameService.joinGame(new JoinGameRequest("WHITE", -1, notEchoResponse.auth().authToken()));
-        });
+        gameService.joinGame(new JoinGameRequest("WHITE", createGameResponse.gameID(), notEchoResponse.auth().authToken()));
 
-        GameData gameData = gameDAO.getGame(createGameResponse.gameID());
-        Assertions.assertEquals(gameData.blackUsername(), "echo");
-        Assertions.assertNotEquals(gameData.whiteUsername(), "notecho");
+        CreateGameResponse createGameResponse2 = gameService.createGame(new CreateGameRequest("game2", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse3 = gameService.createGame(new CreateGameRequest("game3", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse4 = gameService.createGame(new CreateGameRequest("game4", echoResponse.auth().authToken() ));
 
+        ListGameResponse listGameResponse = gameService.listGames(new ListGameRequest(echoResponse.auth().authToken()));
+
+        Assertions.assertTrue(checkGame(createGameResponse.gameID(), gameDAO.getGame(createGameResponse.gameID()).gameName(), listGameResponse.games(), "notecho", "echo"));
+        Assertions.assertTrue(checkGame(createGameResponse2.gameID(), gameDAO.getGame(createGameResponse2.gameID()).gameName(), listGameResponse.games(), null, null));
+        Assertions.assertTrue(checkGame(createGameResponse3.gameID(), gameDAO.getGame(createGameResponse3.gameID()).gameName(), listGameResponse.games(), null, null));
+        Assertions.assertTrue(checkGame(createGameResponse4.gameID(), gameDAO.getGame(createGameResponse4.gameID()).gameName(), listGameResponse.games(), null, null));
     }
+    private boolean checkGame(int gameID, String gameName, ArrayList<GameData> gameList, String whiteUser, String blackUser) {
+        for (GameData game: gameList) {
+            if (game.gameID() == gameID && Objects.equals(game.gameName(), gameName) &&
+                    Objects.equals(game.whiteUsername(), whiteUser) && Objects.equals(game.blackUsername(), blackUser)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("List Games Unauthorized")
+    public void gameServiceListGamesUnauthorized() throws Exception {
+        RegisterRequest echoRequest = new RegisterRequest("echo", "thisisagoodpassword", "urmom@thebomb.com");
+        RegisterResponse echoResponse = userService.register(echoRequest);
+        RegisterRequest notEchoRequest = new RegisterRequest("notecho", "thisisagoodpassword", "urmom@thebomb.com");
+        RegisterResponse notEchoResponse = userService.register(notEchoRequest);
+
+        CreateGameResponse createGameResponse = gameService.createGame(new CreateGameRequest("game1", echoResponse.auth().authToken() ));
+
+        gameService.joinGame(new JoinGameRequest("BLACK", createGameResponse.gameID(), echoResponse.auth().authToken()));
+        gameService.joinGame(new JoinGameRequest("WHITE", createGameResponse.gameID(), notEchoResponse.auth().authToken()));
+
+        CreateGameResponse createGameResponse2 = gameService.createGame(new CreateGameRequest("game2", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse3 = gameService.createGame(new CreateGameRequest("game3", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse4 = gameService.createGame(new CreateGameRequest("game4", echoResponse.auth().authToken() ));
+
+        Assertions.assertThrows(UnauthorizedException.class, () -> {
+            gameService.listGames(new ListGameRequest(""));
+        });
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Clear Database")
+    public void databaseServiceClear() throws Exception {
+        RegisterRequest echoRequest = new RegisterRequest("echo", "thisisagoodpassword", "urmom@thebomb.com");
+        RegisterResponse echoResponse = userService.register(echoRequest);
+        RegisterRequest notEchoRequest = new RegisterRequest("notecho", "thisisagoodpassword", "urmom@thebomb.com");
+        RegisterResponse notEchoResponse = userService.register(notEchoRequest);
+
+        CreateGameResponse createGameResponse = gameService.createGame(new CreateGameRequest("game1", echoResponse.auth().authToken() ));
+
+        gameService.joinGame(new JoinGameRequest("BLACK", createGameResponse.gameID(), echoResponse.auth().authToken()));
+        gameService.joinGame(new JoinGameRequest("WHITE", createGameResponse.gameID(), notEchoResponse.auth().authToken()));
+
+        CreateGameResponse createGameResponse2 = gameService.createGame(new CreateGameRequest("game2", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse3 = gameService.createGame(new CreateGameRequest("game3", echoResponse.auth().authToken() ));
+        CreateGameResponse createGameResponse4 = gameService.createGame(new CreateGameRequest("game4", echoResponse.auth().authToken() ));
+
+        dbService.clearDB();
+
+        Assertions.assertEquals(gameDAO.listGames(), new ArrayList<>());
+        Assertions.assertEquals(authDAO.listAuth(), new ArrayList<>());
+        Assertions.assertEquals(userDAO.listUsers(), new ArrayList<>());
+    }
+
+
 
     /*
     @Test

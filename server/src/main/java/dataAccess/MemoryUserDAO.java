@@ -1,5 +1,6 @@
 package dataAccess;
 
+import model.GameData;
 import model.UserData;
 
 import java.util.ArrayList;
@@ -25,5 +26,8 @@ public class MemoryUserDAO implements UserDAO {
             if (Objects.equals(user.username(), username)) return user;
         }
         return null;
+    }
+    public ArrayList<UserData> listUsers() {
+        return new ArrayList<UserData>(userList);
     }
 }
