@@ -15,6 +15,10 @@ public interface GameDAO {
 
     ArrayList<GameData> listGames();
 
+    void setGameWhite(int gameID, String username);
+    void setGameBlack(int gameID, String username);
+    void addGameWatcher(int gameID, String username);
+
     void updateGame(int gameID, ChessGame game);
 
 
