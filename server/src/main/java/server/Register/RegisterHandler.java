@@ -1,7 +1,7 @@
 package server.Register;
 
 import com.google.gson.Gson;
-import dataAccess.AlreadyTakenException;
+import dataAccess.Exceptions.AlreadyTakenException;
 import service.UserService;
 import spark.Request;
 import spark.Response;

@@ -1,9 +1,6 @@
 package server.Logout;
 
-import com.google.gson.Gson;
-import dataAccess.UnauthorizedException;
-import server.Login.LoginRequest;
-import server.Login.LoginResponse;
+import dataAccess.Exceptions.UnauthorizedException;
 import service.UserService;
 import spark.Request;
 import spark.Response;

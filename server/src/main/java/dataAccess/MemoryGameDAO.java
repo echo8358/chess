@@ -33,20 +33,7 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public ArrayList<GameData> listGames() {
         //this doesn't copy the elements in the list
-        //TODO: Fix this
         return new ArrayList<GameData>(gameList);
-    }
-
-    @Override
-    public void updateGame(int gameID, ChessGame newGame) {
-        for (int i = 0; i < gameList.size(); i++)
-        {
-            GameData game = gameList.get(i);
-            if (game.gameID() == gameID) {
-                gameList.set(i, new GameData(game.gameID(),game.whiteUsername(), game.blackUsername(), game.gameName(), newGame));
-                break;
-            }
-        }
     }
 
     @Override

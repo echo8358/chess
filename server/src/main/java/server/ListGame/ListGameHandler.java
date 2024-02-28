@@ -1,8 +1,7 @@
 package server.ListGame;
 
 import com.google.gson.Gson;
-import dataAccess.UnauthorizedException;
-import server.Login.LoginRequest;
+import dataAccess.Exceptions.UnauthorizedException;
 import service.GameService;
 import spark.Request;
 import spark.Response;

@@ -1,10 +1,7 @@
 package server.Login;
 
 import com.google.gson.Gson;
-import dataAccess.AlreadyTakenException;
-import dataAccess.UnauthorizedException;
-import server.Register.RegisterRequest;
-import server.Register.RegisterResponse;
+import dataAccess.Exceptions.UnauthorizedException;
 import service.UserService;
 import spark.Request;
 import spark.Response;

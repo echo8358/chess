@@ -1,14 +1,15 @@
 package service;
 
 import dataAccess.*;
+import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.ForbiddenException;
+import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
-import server.CreateGame.CreateGameHandler;
 import server.CreateGame.CreateGameRequest;
 import server.CreateGame.CreateGameResponse;
 import server.JoinGame.JoinGameRequest;
 import server.JoinGame.JoinGameResponse;
-import server.ListGame.ListGameHandler;
 import server.ListGame.ListGameRequest;
 import server.ListGame.ListGameResponse;
 
@@ -18,7 +19,7 @@ public class GameService {
 
     GameDAO gameDAO = new MemoryGameDAO();
     AuthDAO authDAO = new MemoryAuthDAO();
-    public ListGameResponse listGames(ListGameRequest listGameRequest) throws UnauthorizedException{
+    public ListGameResponse listGames(ListGameRequest listGameRequest) throws UnauthorizedException {
         if (authDAO.getAuthFromToken(listGameRequest.auth()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
@@ -32,7 +33,7 @@ public class GameService {
         return new CreateGameResponse(gameDAO.createGame(createGameRequest.gameName()));
     }
 
-    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, ForbiddenException{
+    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, ForbiddenException {
         AuthData userAuth = authDAO.getAuthFromToken(joinGameRequest.auth());
         if (userAuth == null) {
             throw new UnauthorizedException("Error: unauthorized");

@@ -1,8 +1,8 @@
 package dataAccess;
 
+import dataAccess.Exceptions.AlreadyTakenException;
 import model.UserData;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public interface UserDAO {

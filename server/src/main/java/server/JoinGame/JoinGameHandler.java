@@ -1,11 +1,9 @@
 package server.JoinGame;
 
 import com.google.gson.Gson;
-import dataAccess.BadRequestException;
-import dataAccess.ForbiddenException;
-import dataAccess.UnauthorizedException;
-import server.CreateGame.CreateGameRequest;
-import server.CreateGame.CreateGameResponse;
+import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.ForbiddenException;
+import dataAccess.Exceptions.UnauthorizedException;
 import service.GameService;
 import spark.Request;
 import spark.Response;

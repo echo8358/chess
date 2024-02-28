@@ -19,8 +19,4 @@ public interface GameDAO {
     void setGameBlack(int gameID, String username);
     void addGameWatcher(int gameID, String username);
 
-    void updateGame(int gameID, ChessGame game);
-
-
-
 }

@@ -1,6 +1,6 @@
 package dataAccess;
 
-import model.GameData;
+import dataAccess.Exceptions.AlreadyTakenException;
 import model.UserData;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData user) throws AlreadyTakenException{
+    public void createUser(UserData user) throws AlreadyTakenException {
         if (getUser(user.username()) != null) throw new AlreadyTakenException("Error: already taken");
         userList.add(user);
     }

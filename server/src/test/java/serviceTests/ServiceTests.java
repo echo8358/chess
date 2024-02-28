@@ -1,7 +1,9 @@
 package serviceTests;
 
-import chess.ChessGame;
 import dataAccess.*;
+import dataAccess.Exceptions.AlreadyTakenException;
+import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -24,7 +26,6 @@ import service.DBService;
 import service.GameService;
 import service.UserService;
 
-import java.net.HttpURLConnection;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
