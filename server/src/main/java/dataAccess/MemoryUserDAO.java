@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) {
-        for (UserData user: userList) {
+        for (UserData user: listUsers()) {
             if (Objects.equals(user.username(), username)) return user;
         }
         return null;

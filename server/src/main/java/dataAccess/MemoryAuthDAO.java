@@ -19,7 +19,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public AuthData getAuthFromToken(String authToken) {
-        for (AuthData auth: authList) {
+        for (AuthData auth: listAuth()) {
             if (Objects.equals(auth.authToken(), authToken)) {
                 return auth;
             }
