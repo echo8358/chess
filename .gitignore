@@ -8,3 +8,6 @@ out/
 
 ### Mac OS ###
 .DS_Store
+
+### dp.properties
+server/src/main/resources/db.properties
