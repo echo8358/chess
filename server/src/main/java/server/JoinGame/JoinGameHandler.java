@@ -2,6 +2,7 @@ package server.JoinGame;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.ForbiddenException;
 import dataAccess.Exceptions.UnauthorizedException;
 import service.GameService;
@@ -33,6 +34,9 @@ public class JoinGameHandler {
         } catch ( ForbiddenException e) {
             res.status(403);
             return "{ \"message\" : \"Error: forbidden\" }";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return "{ \"message\" : \"Error: internal server error "+ e.getMessage()+"\" }";
         }
     }
 }

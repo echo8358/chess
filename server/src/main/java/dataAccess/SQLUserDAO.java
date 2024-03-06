@@ -25,8 +25,8 @@ public class SQLUserDAO implements UserDAO{
             }
         } catch (SQLException e) {
             throw new DataAccessException("SQL exception clearing database");
-        } catch (dataAccess.DataAccessException e) {
-            throw new DataAccessException("SQL Connection error");
+        } catch (DataAccessException e) {
+            throw new DataAccessException("SQL Connection error" + e.getMessage());
         }
 
     }
@@ -39,8 +39,7 @@ public class SQLUserDAO implements UserDAO{
 
             try (var getUserStatement = conn.prepareStatement(stmt)) {
                 getUserStatement.setString(1, user.username());
-                try (ResultSet result = getUserStatement.executeQuery())
-                {
+                try (ResultSet result = getUserStatement.executeQuery()) {
                     if (result.next()) {
                         if (Objects.equals(result.getString("username"), user.username())) {
                             throw new AlreadyTakenException("Username already taken.");
@@ -57,9 +56,11 @@ public class SQLUserDAO implements UserDAO{
 
                 insertUserStatement.executeUpdate();
             }
+        } catch (AlreadyTakenException e) {
+            throw e;
         } catch (SQLException sqlException) {
             throw new DataAccessException("SQL exception getting user.");
-        } catch (dataAccess.DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new DataAccessException("SQL Connection error");
         }
     }
@@ -81,7 +82,7 @@ public class SQLUserDAO implements UserDAO{
             }
         } catch (SQLException sqlException) {
             throw new DataAccessException("SQL exception getting user." + sqlException.getMessage());
-        } catch (dataAccess.DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new DataAccessException("SQL Connection error" + e.getMessage());
         }
         return null;
@@ -104,7 +105,7 @@ public class SQLUserDAO implements UserDAO{
             }
         } catch (SQLException sqlException) {
             throw new DataAccessException("SQL exception getting user.");
-        } catch (dataAccess.DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new DataAccessException("SQL Connection error");
         }
         return userList;

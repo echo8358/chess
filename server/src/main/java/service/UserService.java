@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class UserService {
     static UserDAO userDAO = new SQLUserDAO();
-    static AuthDAO authDAO = new MemoryAuthDAO();
+    static AuthDAO authDAO = new SQLAuthDAO();
 
     public RegisterResponse register(RegisterRequest registerRequest) throws AlreadyTakenException, DataAccessException {
         AuthData newAuthData;
@@ -34,7 +34,7 @@ public class UserService {
         }
         return new LoginResponse(authDAO.createAuth(loginRequest.username()));
     }
-    public LogoutResponse logout(LogoutRequest logoutRequest) throws UnauthorizedException {
+    public LogoutResponse logout(LogoutRequest logoutRequest) throws UnauthorizedException, DataAccessException {
         if (authDAO.getAuthFromToken(logoutRequest.authToken()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }

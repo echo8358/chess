@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.ForbiddenException;
 import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
@@ -18,22 +19,22 @@ import java.util.Objects;
 public class GameService {
 
     GameDAO gameDAO = new MemoryGameDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
-    public ListGameResponse listGames(ListGameRequest listGameRequest) throws UnauthorizedException {
+    AuthDAO authDAO = new SQLAuthDAO();
+    public ListGameResponse listGames(ListGameRequest listGameRequest) throws UnauthorizedException, DataAccessException {
         if (authDAO.getAuthFromToken(listGameRequest.auth()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
         return new ListGameResponse(gameDAO.listGames());
     }
 
-    public CreateGameResponse createGame(CreateGameRequest createGameRequest) throws UnauthorizedException {
+    public CreateGameResponse createGame(CreateGameRequest createGameRequest) throws UnauthorizedException, DataAccessException {
         if (authDAO.getAuthFromToken(createGameRequest.auth()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
         return new CreateGameResponse(gameDAO.createGame(createGameRequest.gameName()));
     }
 
-    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, ForbiddenException {
+    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, ForbiddenException, DataAccessException {
         AuthData userAuth = authDAO.getAuthFromToken(joinGameRequest.auth());
         if (userAuth == null) {
             throw new UnauthorizedException("Error: unauthorized");

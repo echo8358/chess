@@ -1,6 +1,7 @@
 package server.CreateGame;
 
 import com.google.gson.Gson;
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.UnauthorizedException;
 import service.GameService;
 import spark.Request;
@@ -25,6 +26,9 @@ public class CreateGameHandler {
         } catch (UnauthorizedException e) {
             res.status(401);
             return "{ \"message\" : \"Error: unauthorized\" }";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return "{ \"message\" : \"Error: internal server error "+ e.getMessage()+"\" }";
         }
 
     }

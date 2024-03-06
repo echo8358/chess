@@ -1,5 +1,6 @@
 package server.Logout;
 
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.UnauthorizedException;
 import service.UserService;
 import spark.Request;
@@ -22,6 +23,9 @@ public class LogoutHandler {
         } catch (UnauthorizedException e){
             res.status(401);
             return "{ \"message\" : \"Error: unauthorized\" }";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return "{ \"message\" : \"Error: internal server error "+ e.getMessage()+"\" }";
         }
     }
 }
