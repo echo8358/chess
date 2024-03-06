@@ -2,6 +2,7 @@ package server.Register;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.AlreadyTakenException;
+import dataAccess.Exceptions.DataAccessException;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -24,6 +25,10 @@ public class RegisterHandler {
         } catch (AlreadyTakenException e) {
             res.status(403);
             return "{ \"message\" : \"Error: already taken\" }";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return "{ \"message\" : \"Error: internal server error\" }";
         }
+
     }
 }

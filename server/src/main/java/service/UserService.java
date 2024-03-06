@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import dataAccess.Exceptions.AlreadyTakenException;
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
@@ -15,10 +16,10 @@ import server.Register.RegisterResponse;
 import java.util.Objects;
 
 public class UserService {
-    static UserDAO userDAO = new MemoryUserDAO();
+    static UserDAO userDAO = new SQLUserDAO();
     static AuthDAO authDAO = new MemoryAuthDAO();
 
-    public RegisterResponse register(RegisterRequest registerRequest) throws AlreadyTakenException {
+    public RegisterResponse register(RegisterRequest registerRequest) throws AlreadyTakenException, DataAccessException {
         AuthData newAuthData;
         UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         userDAO.createUser(user);
@@ -26,7 +27,7 @@ public class UserService {
         return new RegisterResponse(newAuthData);
     }
 
-    public LoginResponse login(LoginRequest loginRequest) throws UnauthorizedException {
+    public LoginResponse login(LoginRequest loginRequest) throws UnauthorizedException, DataAccessException {
         UserData reqUser = userDAO.getUser(loginRequest.username());
         if (reqUser == null || !Objects.equals(reqUser.password(), loginRequest.password())) {
             throw new UnauthorizedException("Error: unauthorized");

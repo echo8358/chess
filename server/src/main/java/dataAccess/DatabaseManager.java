@@ -29,7 +29,14 @@ public class DatabaseManager {
         } catch (Exception ex) {
             throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
         }
+        try {
+            createDatabase();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to create database. " + e.getMessage());
+        }
     }
+
+    public DatabaseManager() {}
 
     /**
      * Creates the database if it does not already exist.
@@ -40,6 +47,42 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(connectionUrl, user, password);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
+            }
+
+            conn.setCatalog(databaseName);
+            var createUserTable = """
+                CREATE TABLE IF NOT EXISTS user (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    username VARCHAR(255) NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                    )""";
+            try (var createUserTableStatement = conn.prepareStatement(createUserTable)) {
+                createUserTableStatement.executeUpdate();
+            }
+
+            var createAuthTable = """
+                CREATE TABLE IF NOT EXISTS auth (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    username VARCHAR(255) NOT NULL,
+                    authToken VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                    )""";
+            try (var createAuthTableStatement = conn.prepareStatement(createAuthTable)) {
+                createAuthTableStatement.executeUpdate();
+            }
+
+            var createGameTable = """
+                CREATE TABLE IF NOT EXISTS game (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    whiteUsername VARCHAR(255) NOT NULL,
+                    blackUsername VARCHAR(255) NOT NULL,
+                    game TEXT NOT NULL,
+                    PRIMARY KEY (id)
+                    )""";
+            try (var createGameTableStatement = conn.prepareStatement(createGameTable)) {
+                createGameTableStatement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());

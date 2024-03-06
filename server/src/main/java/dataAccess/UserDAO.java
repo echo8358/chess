@@ -1,17 +1,18 @@
 package dataAccess;
 
 import dataAccess.Exceptions.AlreadyTakenException;
+import dataAccess.Exceptions.DataAccessException;
 import model.UserData;
 
 import java.util.ArrayList;
 
 public interface UserDAO {
 
-    void clear();
+    void clear() throws DataAccessException;
 
-    void createUser(UserData user) throws AlreadyTakenException;
+    void createUser(UserData user) throws DataAccessException;
 
-    UserData getUser(String username);
+    UserData getUser(String username) throws DataAccessException;
 
-    ArrayList<UserData> listUsers();
+    ArrayList<UserData> listUsers() throws DataAccessException;
 }

@@ -3,6 +3,7 @@ package serviceTests;
 import dataAccess.*;
 import dataAccess.Exceptions.AlreadyTakenException;
 import dataAccess.Exceptions.BadRequestException;
+import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
@@ -66,7 +67,7 @@ public class ServiceTests {
 
 
     @BeforeEach
-    public void setup() throws TestException {
+    public void setup() throws TestException, DataAccessException {
         dbService.clearDB();
     }
 
