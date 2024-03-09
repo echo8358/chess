@@ -9,6 +9,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
 import passoffTests.testClasses.TestModels;
@@ -35,17 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {
 
-    private static TestModels.TestUser existingUser;
-
-    private static TestModels.TestUser newUser;
-
-    private static TestModels.TestCreateRequest createRequest;
-
-    private static TestServerFacade serverFacade;
-    private static Server server;
-
-    private String existingAuth;
-
     private static UserService userService;
     private static GameService gameService;
     private static DBService dbService;
@@ -60,9 +50,9 @@ public class ServiceTests {
         gameService = new GameService();
         dbService = new DBService();
 
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
-        authDAO = new MemoryAuthDAO();
+        userDAO = new SQLUserDAO();
+        gameDAO = new SQLGameDAO();
+        authDAO = new SQLAuthDAO();
     }
 
 
@@ -83,7 +73,8 @@ public class ServiceTests {
         //check database
         UserData newUser = userDAO.getUser("echo");
         Assertions.assertNotNull(newUser);
-        Assertions.assertEquals(newUser.password(), "thisisagoodpassword");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Assertions.assertTrue(encoder.matches("thisisagoodpassword", newUser.password()));
         Assertions.assertEquals(newUser.email(), "urmom@thebomb.com");
     }
 
