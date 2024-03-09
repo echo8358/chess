@@ -98,7 +98,7 @@ public class SQLGameDAO implements GameDAO{
                         String blackUsername = result.getString("blackUsername");
                         String name = result.getString("name");
                         String game = result.getString("game");
-                        return new GameData(gameID, whiteUsername, blackUsername, name, new ChessGame());
+                        return new GameData(gameID, whiteUsername, blackUsername, name, game);
                         //String stmt = "INSERT INTO game (whiteUsername, blackUsername, name, game) VALUES (?, ?, ?, ?);";
                     }
                 }
@@ -125,7 +125,7 @@ public class SQLGameDAO implements GameDAO{
                         String blackUsername = result.getString("blackUsername");
                         String name = result.getString("name");
                         String game = result.getString("game");
-                        gameList.add(new GameData(id, whiteUsername, blackUsername, name, new ChessGame()));
+                        gameList.add(new GameData(id, whiteUsername, blackUsername, name, game));
                     }
                 }
             }
