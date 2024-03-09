@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.*;
 import dataAccess.Exceptions.BadRequestException;
 import dataAccess.Exceptions.DataAccessException;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 public class GameService {
 
-    GameDAO gameDAO = new MemoryGameDAO();
+    GameDAO gameDAO = new SQLGameDAO();
     AuthDAO authDAO = new SQLAuthDAO();
     public ListGameResponse listGames(ListGameRequest listGameRequest) throws UnauthorizedException, DataAccessException {
         if (authDAO.getAuthFromToken(listGameRequest.auth()) == null) {
@@ -31,7 +32,9 @@ public class GameService {
         if (authDAO.getAuthFromToken(createGameRequest.auth()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
-        return new CreateGameResponse(gameDAO.createGame(createGameRequest.gameName()));
+        int id = gameDAO.createGame(createGameRequest.gameName());
+        gameDAO.updateGame(id, "");
+        return new CreateGameResponse(id);
     }
 
     public JoinGameResponse joinGame(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, ForbiddenException, DataAccessException {
@@ -62,4 +65,5 @@ public class GameService {
 
         return new JoinGameResponse();
     }
+
 }

@@ -66,4 +66,16 @@ public class MemoryGameDAO implements GameDAO{
     public void addGameWatcher(int gameID, String username) {
         //do something next phase
     }
+
+    @Override
+    public void updateGame(int gameID, String newGame) {
+        for (int i = 0; i < gameList.size(); i++)
+        {
+            GameData game = gameList.get(i);
+            if (game.gameID() == gameID) {
+                gameList.set(i, new GameData(game.gameID(),game.whiteUsername(), game.blackUsername(), game.gameName(), new ChessGame()));
+                break;
+            }
+        }
+    }
 }
