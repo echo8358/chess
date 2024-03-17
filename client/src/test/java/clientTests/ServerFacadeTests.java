@@ -5,8 +5,11 @@ import dataAccess.Exceptions.BadRequestException;
 import dataAccess.Exceptions.ForbiddenException;
 import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -80,26 +83,82 @@ public class ServerFacadeTests {
 
     @Test
     void registerTestPositive() {
+        Assertions.assertDoesNotThrow(() -> {
+            serverFacade.register("echo", "password", "urmom@pm.me");
+        });
     }
 
     @Test
     void logoutTestPositive() {
+        AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
+        Assertions.assertDoesNotThrow(() -> {
+            serverFacade.logout(authData.authToken());
+        });
     }
 
     @Test
     void loginTestPositive() {
+        serverFacade.register("echo", "password", "urmom@pm.me");
+        Assertions.assertDoesNotThrow(() -> {
+            serverFacade.login("echo", "password");
+        });
     }
 
     @Test
     void listGamesTestPositive() {
+        AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
+        serverFacade.createGame("thebestgame1", authData.authToken());
+        serverFacade.createGame("thebestgame2", authData.authToken());
+        serverFacade.createGame("thebestgame3", authData.authToken());
+        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken());
+        Assertions.assertEquals(gameList.size(), 3);
+
+        boolean assertPass = false;
+        for (GameData game: gameList) {
+           if (game.gameName() == "thebestgame1") {
+               assertPass = true;
+               break;
+           }
+        }
+        Assertions.assertTrue(assertPass);
+        assertPass = false;
+        for (GameData game: gameList) {
+            if (game.gameName() == "thebestgame2") {
+                assertPass = true;
+                break;
+            }
+        }
+        Assertions.assertTrue(assertPass);
+        assertPass = false;
+        for (GameData game: gameList) {
+            if (game.gameName() == "thebestgame3") {
+                assertPass = true;
+                break;
+            }
+        }
+        Assertions.assertTrue(assertPass);
+
     }
 
     @Test
     void joinGameTestPositive() {
+        AuthData authDataEcho = serverFacade.register("echo", "password", "urmom@pm.me");
+        AuthData authDataNotEcho = serverFacade.register("notecho", "password", "urmom@pm.me");
+        int gameID = serverFacade.createGame("thebestgame1", authDataEcho.authToken());
+        serverFacade.joinGame("WHITE", gameID, authDataEcho.authToken());
+        serverFacade.joinGame("BLACK", gameID, authDataNotEcho.authToken());
+        ArrayList<GameData> gameList = serverFacade.listGames(authDataNotEcho.authToken());
+        Assertions.assertEquals(gameList.getFirst().whiteUsername(), "echo");
+        Assertions.assertEquals(gameList.getFirst().blackUsername(), "notecho");
     }
 
     @Test
     void createGameTestPositive() {
+        AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
+        serverFacade.createGame("game", authData.authToken());
+        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken());
+        Assertions.assertEquals(1, gameList.size());
+        Assertions.assertEquals("game", gameList.getFirst().gameName());
     }
 
 }
