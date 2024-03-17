@@ -1,3 +1,5 @@
+package ServerFacade;
+
 import model.AuthData;
 import model.GameData;
 
@@ -24,5 +26,9 @@ public class ServerFacade {
 
     public int createGame(String gameName, String authToken) {
         return 0;
+    }
+
+    public void clearDatabase() {
+
     }
 }
