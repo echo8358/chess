@@ -20,10 +20,52 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @Test
+    void registerTestNegative() {
+    }
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    void logoutTestNegative() {
+    }
+
+    @Test
+    void loginTestNegative() {
+    }
+
+    @Test
+    void listGamesTestNegative() {
+    }
+
+    @Test
+    void joinGameTestNegative() {
+    }
+
+    @Test
+    void createGameTestNegative() {
+    }
+
+    @Test
+    void registerTestPositive() {
+    }
+
+    @Test
+    void logoutTestPositive() {
+    }
+
+    @Test
+    void loginTestPositive() {
+    }
+
+    @Test
+    void listGamesTestPositive() {
+    }
+
+    @Test
+    void joinGameTestPositive() {
+    }
+
+    @Test
+    void createGameTestPositive() {
     }
 
 }
