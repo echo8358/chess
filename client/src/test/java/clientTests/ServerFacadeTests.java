@@ -11,6 +11,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ServerFacadeTests {
@@ -112,12 +113,12 @@ public class ServerFacadeTests {
         serverFacade.createGame("thebestgame1", authData.authToken());
         serverFacade.createGame("thebestgame2", authData.authToken());
         serverFacade.createGame("thebestgame3", authData.authToken());
-        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken());
+        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken()).games();
         Assertions.assertEquals(gameList.size(), 3);
 
         boolean assertPass = false;
         for (GameData game: gameList) {
-           if (game.gameName() == "thebestgame1") {
+           if (Objects.equals(game.gameName(), "thebestgame1")) {
                assertPass = true;
                break;
            }
@@ -125,7 +126,7 @@ public class ServerFacadeTests {
         Assertions.assertTrue(assertPass);
         assertPass = false;
         for (GameData game: gameList) {
-            if (game.gameName() == "thebestgame2") {
+            if (Objects.equals(game.gameName(), "thebestgame2")) {
                 assertPass = true;
                 break;
             }
@@ -133,7 +134,7 @@ public class ServerFacadeTests {
         Assertions.assertTrue(assertPass);
         assertPass = false;
         for (GameData game: gameList) {
-            if (game.gameName() == "thebestgame3") {
+            if (Objects.equals(game.gameName(), "thebestgame3")) {
                 assertPass = true;
                 break;
             }
@@ -149,16 +150,16 @@ public class ServerFacadeTests {
         int gameID = serverFacade.createGame("thebestgame1", authDataEcho.authToken());
         serverFacade.joinGame("WHITE", gameID, authDataEcho.authToken());
         serverFacade.joinGame("BLACK", gameID, authDataNotEcho.authToken());
-        ArrayList<GameData> gameList = serverFacade.listGames(authDataNotEcho.authToken());
-        Assertions.assertEquals(gameList.getFirst().whiteUsername(), "echo");
-        Assertions.assertEquals(gameList.getFirst().blackUsername(), "notecho");
+        ArrayList<GameData> gameList = serverFacade.listGames(authDataNotEcho.authToken()).games();
+        Assertions.assertEquals("echo", gameList.getFirst().whiteUsername());
+        Assertions.assertEquals("notecho", gameList.getFirst().blackUsername());
     }
 
     @Test
     void createGameTestPositive() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         serverFacade.createGame("game", authData.authToken());
-        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken());
+        ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken()).games();
         Assertions.assertEquals(1, gameList.size());
         Assertions.assertEquals("game", gameList.getFirst().gameName());
     }

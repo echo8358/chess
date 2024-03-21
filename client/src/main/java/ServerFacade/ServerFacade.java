@@ -3,6 +3,8 @@ package ServerFacade;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import server.JoinGame.JoinGameResponse;
+import server.ListGame.ListGameResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,15 +36,18 @@ public class ServerFacade {
     }
 
 
-    public ArrayList<GameData> listGames(String authToken) {
-        return null;
+    public ListGameResponse listGames(String authToken) throws ResponseException {
+        return this.makeRequest("GET", "/game", null, ListGameResponse.class, authToken);
     }
 
-    public void joinGame(String playerColor, int gameID, String auth) {
+    public void joinGame(String playerColor, int gameID, String authToken) throws ResponseException {
+        String json = "{ \"playerColor\":\""+playerColor+"\", \"gameID\": "+String.valueOf(gameID)+" }";
+        this.makeRequest("PUT", "/game", json, JoinGameResponse.class, authToken);
     }
 
-    public int createGame(String gameName, String authToken) {
-        return 0;
+    public int createGame(String gameName, String authToken) throws ResponseException {
+        String json = "{ \"gameName\":\""+gameName+"\" }";
+        return this.makeRequest("POST", "/game", json, GameID.class, authToken).gameID();
     }
 
     public void clearDatabase() throws ResponseException {
