@@ -1,6 +1,7 @@
 package clientTests;
 
 import ServerFacade.ServerFacade;
+import ServerFacade.ResponseException;
 import dataAccess.Exceptions.BadRequestException;
 import dataAccess.Exceptions.ForbiddenException;
 import dataAccess.Exceptions.UnauthorizedException;
@@ -20,7 +21,8 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(3676);
+        serverFacade = new ServerFacade("http://localhost:3676");
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -36,7 +38,7 @@ public class ServerFacadeTests {
 
 
     @Test
-    void registerTestNegative() {
+    void registerTestNegative() throws ResponseException {
         serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertThrows(ForbiddenException.class, () -> {
             serverFacade.register("echo", "password", "urmom@pm.me");
@@ -51,7 +53,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void loginTestNegative() {
+    void loginTestNegative() throws ResponseException {
         serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertThrows(UnauthorizedException.class, () -> {
             serverFacade.login("echo", "password1");
@@ -66,7 +68,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void joinGameTestNegative() {
+    void joinGameTestNegative() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertThrows(BadRequestException.class, () -> {
             serverFacade.joinGame("WHITE", 123456, authData.authToken());
@@ -74,7 +76,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void createGameTestNegative() {
+    void createGameTestNegative() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertThrows(UnauthorizedException.class, () -> {
             serverFacade.createGame("thebestgame", "");
@@ -89,7 +91,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void logoutTestPositive() {
+    void logoutTestPositive() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertDoesNotThrow(() -> {
             serverFacade.logout(authData.authToken());
@@ -97,7 +99,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void loginTestPositive() {
+    void loginTestPositive() throws ResponseException {
         serverFacade.register("echo", "password", "urmom@pm.me");
         Assertions.assertDoesNotThrow(() -> {
             serverFacade.login("echo", "password");
@@ -105,7 +107,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void listGamesTestPositive() {
+    void listGamesTestPositive() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         serverFacade.createGame("thebestgame1", authData.authToken());
         serverFacade.createGame("thebestgame2", authData.authToken());
@@ -141,7 +143,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void joinGameTestPositive() {
+    void joinGameTestPositive() throws ResponseException {
         AuthData authDataEcho = serverFacade.register("echo", "password", "urmom@pm.me");
         AuthData authDataNotEcho = serverFacade.register("notecho", "password", "urmom@pm.me");
         int gameID = serverFacade.createGame("thebestgame1", authDataEcho.authToken());
@@ -153,7 +155,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void createGameTestPositive() {
+    void createGameTestPositive() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
         serverFacade.createGame("game", authData.authToken());
         ArrayList<GameData> gameList = serverFacade.listGames(authData.authToken());
