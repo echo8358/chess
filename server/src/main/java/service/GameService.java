@@ -48,13 +48,15 @@ public class GameService {
         }
 
         if (Objects.equals(joinGameRequest.playerColor(), "WHITE")) {
-            if (!Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).whiteUsername(), null)) {
+            if (!Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).whiteUsername(), null)
+                    && !Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).whiteUsername(), userAuth.username())) {
                 throw new ForbiddenException("Error: forbidden");
             }
             gameDAO.setGameWhite(joinGameRequest.gameID(),userAuth.username());
         }
         else if (Objects.equals(joinGameRequest.playerColor(), "BLACK")) {
-            if (!Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).blackUsername(), null)) {
+            if (!Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).blackUsername(), null)
+                    && !Objects.equals(gameDAO.getGame(joinGameRequest.gameID()).blackUsername(), userAuth.username())) {
                 throw new ForbiddenException("Error: forbidden");
             }
             gameDAO.setGameBlack(joinGameRequest.gameID(),userAuth.username());
