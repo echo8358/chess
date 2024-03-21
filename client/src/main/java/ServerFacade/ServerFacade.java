@@ -30,7 +30,7 @@ public class ServerFacade {
         return this.makeRequest("POST", "/session", json, AuthData.class, null);
     }
     public void logout(String authToken) throws ResponseException {
-        this.makeRequest("POST", "/session", null, null, authToken);
+        this.makeRequest("DELETE", "/session", null, null, authToken);
     }
 
 
@@ -45,8 +45,8 @@ public class ServerFacade {
         return 0;
     }
 
-    public void clearDatabase() {
-
+    public void clearDatabase() throws ResponseException {
+        this.makeRequest("DELETE", "/db", null, null, null);
     }
 
     /*
@@ -74,14 +74,17 @@ public class ServerFacade {
     }
     */
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
+    private <T> T makeRequest(String method, String path, String json, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
+            if (authToken != null) {
+                http.addRequestProperty("Authorization",authToken);
+            }
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            writeBody(json, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -91,10 +94,10 @@ public class ServerFacade {
     }
 
 
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-        if (request != null) {
+    private static void writeBody(String reqData, HttpURLConnection http) throws IOException {
+        if (reqData != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
+            //String reqData = new Gson().toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }

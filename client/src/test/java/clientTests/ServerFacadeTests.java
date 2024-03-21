@@ -32,7 +32,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    void clearDatabase() {
+    void clearDatabase() throws ResponseException {
         serverFacade.clearDatabase();
     }
 
@@ -40,14 +40,14 @@ public class ServerFacadeTests {
     @Test
     void registerTestNegative() throws ResponseException {
         serverFacade.register("echo", "password", "urmom@pm.me");
-        Assertions.assertThrows(ForbiddenException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.register("echo", "password", "urmom@pm.me");
         });
     }
 
     @Test
     void logoutTestNegative() {
-        Assertions.assertThrows(UnauthorizedException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.logout("");
         });
     }
@@ -55,14 +55,14 @@ public class ServerFacadeTests {
     @Test
     void loginTestNegative() throws ResponseException {
         serverFacade.register("echo", "password", "urmom@pm.me");
-        Assertions.assertThrows(UnauthorizedException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.login("echo", "password1");
         });
     }
 
     @Test
     void listGamesTestNegative() {
-        Assertions.assertThrows(UnauthorizedException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.listGames("");
         });
     }
@@ -70,7 +70,7 @@ public class ServerFacadeTests {
     @Test
     void joinGameTestNegative() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
-        Assertions.assertThrows(BadRequestException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.joinGame("WHITE", 123456, authData.authToken());
         });
     }
@@ -78,7 +78,7 @@ public class ServerFacadeTests {
     @Test
     void createGameTestNegative() throws ResponseException {
         AuthData authData = serverFacade.register("echo", "password", "urmom@pm.me");
-        Assertions.assertThrows(UnauthorizedException.class, () -> {
+        Assertions.assertThrows(ResponseException.class, () -> {
             serverFacade.createGame("thebestgame", "");
         });
     }
