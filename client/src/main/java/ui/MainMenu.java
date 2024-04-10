@@ -159,8 +159,20 @@ public class MainMenu {
             }
         }
     }
-    private static void printGameHelp() {}
-    private static void printObserveHelp() {}
+    private static void printGameHelp() {
+        //userInput = UIUtils.input("(h)elp, re(d)raw board, (l)eave, (m)ake move, (r)esign, or h(i)ghlight legal moves");
+        System.out.println("(h)elp -> prints this dialog.");
+        System.out.println("re(d)raw board -> redraws the current board.");
+        System.out.println("(l)eave -> leaves the current game. Does not resign.");
+        System.out.println("(m)ake move -> prompts for a move. If valid, make the move on the board.");
+        System.out.println("(r)esign -> forfeits current game.");
+        System.out.println("h(i)ghlight legal moves -> highlights legal moves. Say something about color here.");
+    }
+    private static void printObserveHelp() {
+        System.out.println("(h)elp -> prints this dialog.");
+        System.out.println("re(d)raw board -> redraws the current board.");
+        System.out.println("(l)eave -> leaves the current game.");
+    }
     private static void redrawBoard() {
         MainMenu.reloadGame();
     }
