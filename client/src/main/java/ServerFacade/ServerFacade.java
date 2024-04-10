@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import model.AuthData;
 import server.http.JoinGame.JoinGameResponse;
 import server.http.ListGame.ListGameResponse;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.userCommands.JoinObserver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +18,16 @@ import java.net.URL;
 public class ServerFacade {
     static String serverUrl;
     static HttpURLConnection connection;
-    public ServerFacade(String remote){
+    static WebSocketCommunicator webSocketCommunicator;
+    static Gson gson = new Gson();
+    public ServerFacade(String remote) {
         serverUrl = remote;
+        try {
+            webSocketCommunicator = new WebSocketCommunicator();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
@@ -49,6 +59,15 @@ public class ServerFacade {
 
     public void clearDatabase() throws ResponseException {
         this.makeRequest("DELETE", "/db", null, null, null);
+    }
+
+    public void testWebSocket(String authToken) {
+        try {
+            webSocketCommunicator.send(gson.toJson((new JoinObserver(authToken,1))));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /*

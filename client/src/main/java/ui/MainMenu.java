@@ -94,6 +94,7 @@ public class MainMenu {
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
+        serverFacade.testWebSocket(auth.authToken());
     }
 
     private static void joinObserver(AuthData auth) {

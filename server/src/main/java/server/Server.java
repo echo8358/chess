@@ -1,13 +1,18 @@
 package server;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import server.http.CreateGame.CreateGameHandler;
 import server.http.JoinGame.JoinGameHandler;
 import server.http.ListGame.ListGameHandler;
 import server.http.Login.LoginHandler;
 import server.http.Logout.LogoutHandler;
 import server.http.Register.RegisterHandler;
+import server.websocket.WebSocketHandler;
 import service.DBService;
 import spark.*;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.*;
 
 import static spark.Spark.*;
 
@@ -15,6 +20,8 @@ public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+
+        Spark.webSocket("/connect", WebSocketHandler.class);
 
         Spark.staticFiles.location("web");
 
@@ -32,6 +39,7 @@ public class Server {
         post("/game", (req, res) ->  (new CreateGameHandler()).handle(req, res) );
         put("/game", (req, res) ->  (new JoinGameHandler()).handle(req, res) );
 
+        //WSServer wsServer = new WSServer();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -41,4 +49,5 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
+
 }

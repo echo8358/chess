@@ -1,10 +1,14 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -14,22 +18,33 @@ import java.util.Timer;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final Gson gson;
+
+    public WebSocketHandler() {
+        gson = createSerializer();
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         //do type helper stuff
+        System.out.println(message);
+        UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
+        System.out.println(command.getCommandType());
+        connections.add("username",session, 1);
+        connections.broadcast(1, "", new Notification(message));
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case JOIN_OBSERVER -> joinObserver();
+            case JOIN_OBSERVER -> joinObserver((JoinObserver) command, session);
             case JOIN_PLAYER -> joinPlayer();
             case LEAVE -> leave();
             case MAKE_MOVE -> makeMove();
             case RESIGN -> resign();
             //case RESIGN -> resign(action.visitorName(), session);
         }
+
     }
 
-    private void joinObserver() {}
+    private void joinObserver(JoinObserver command, Session session) {}
     private void joinPlayer() {}
     private void leave() {}
     private void makeMove() {}
@@ -60,4 +75,25 @@ public class WebSocketHandler {
     }
 
      */
+    public static Gson createSerializer() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(UserGameCommand.class,
+                (JsonDeserializer<UserGameCommand>) (el, type, ctx) -> {
+                    UserGameCommand command = null;
+                    if (el.isJsonObject()) {
+                        String commandType = el.getAsJsonObject().get("commandType").getAsString();
+                        switch (UserGameCommand.CommandType.valueOf(commandType)) {
+                            case JOIN_OBSERVER -> command = ctx.deserialize(el, JoinObserver.class);
+                            case JOIN_PLAYER -> command = ctx.deserialize(el, JoinPlayer.class);
+                            case LEAVE -> command = ctx.deserialize(el, Leave.class);
+                            case MAKE_MOVE -> command = ctx.deserialize(el, MakeMove.class);
+                            case RESIGN -> command = ctx.deserialize(el, Resign.class);
+                        }
+                    }
+                    return command;
+                });
+
+        return gsonBuilder.create();
+    }
 }
