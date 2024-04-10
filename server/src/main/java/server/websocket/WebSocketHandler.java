@@ -1,6 +1,8 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -22,6 +24,8 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Timer;
 
@@ -93,7 +97,23 @@ public class WebSocketHandler {
         connections.remove(auth.username());
         connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" has left ")));
     }
-    private void makeMove(MakeMove command, Session session) {}
+    private void makeMove(MakeMove command, Session session) throws DataAccessException {
+        GameData game = gameDAO.getGame(command.getGameID());
+        Collection<ChessMove> validMoves = game.game().validMoves(command.getMove().getStartPosition());
+        try {
+            for (ChessMove move : validMoves) {
+                if (move == command.getMove()) {
+                    game.game().makeMove(command.getMove());
+                    //send new boards
+                    return;
+                }
+            }
+        } catch (InvalidMoveException ignore) {}
+        //notify error
+
+
+
+    }
     private void resign(Resign command, Session session) {}
     private AuthData checkAuth(UserGameCommand command, Session session) throws IOException {
         AuthData auth;
