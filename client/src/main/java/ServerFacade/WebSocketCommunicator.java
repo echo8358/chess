@@ -1,22 +1,20 @@
 package ServerFacade;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
+import webSocketMessages.userCommands.JoinPlayer;
+
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Scanner;
 
 public class WebSocketCommunicator extends Endpoint {
-    public static void main(String[] args) throws Exception {
-        var ws = new WebSocketCommunicator();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Enter a message you want to echo");
-        while (true) ws.send(scanner.nextLine());
-    }
 
     public Session session;
+    private Gson gson = new Gson();
 
-    public WebSocketCommunicator() throws Exception {
-        URI uri = new URI("ws://localhost:3676/connect");
+    public WebSocketCommunicator(String remote) throws Exception {
+        URI uri = new URI("ws://"+remote+"/connect");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 
@@ -25,6 +23,14 @@ public class WebSocketCommunicator extends Endpoint {
                 System.out.println(message);
             }
         });
+    }
+
+    public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor playerColor) {
+        try {
+            send(gson.toJson(new JoinPlayer(authToken, gameID, playerColor)));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void send(String msg) throws Exception {

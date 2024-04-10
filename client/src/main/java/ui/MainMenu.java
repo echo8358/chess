@@ -1,5 +1,6 @@
 package ui;
 
+import ServerFacade.HttpCommunicator;
 import ServerFacade.ServerFacade;
 import chess.ChessGame;
 import model.AuthData;
@@ -89,12 +90,14 @@ public class MainMenu {
         while (!Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")) {
             color = input("(WHITE) or (BLACK)?");
         }
+        ChessGame.TeamColor trueColor = ChessGame.TeamColor.valueOf(color);
+        int trueGameID = gamesList.get(gameID).gameID();
         try {
-            serverFacade.joinGame(color, gamesList.get(gameID).gameID(), auth.authToken());
+            serverFacade.joinGame(color, trueGameID, auth.authToken());
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
-        serverFacade.testWebSocket(auth.authToken());
+        serverFacade.joinPlayer(auth.authToken(), trueGameID, trueColor);
     }
 
     private static void joinObserver(AuthData auth) {

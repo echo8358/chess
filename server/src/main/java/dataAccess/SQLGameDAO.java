@@ -1,6 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataAccess.Exceptions.AlreadyTakenException;
 import dataAccess.Exceptions.DataAccessException;
 import model.GameData;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class SQLGameDAO implements GameDAO{
+
+    Gson gson = new Gson();
 
     public void clear() throws DataAccessException{
         try {
@@ -42,7 +45,7 @@ public class SQLGameDAO implements GameDAO{
                 insertGameStatement.setString(1, null);
                 insertGameStatement.setString(2,  null);
                 insertGameStatement.setString(3, gameName);
-                insertGameStatement.setString(4, "");
+                insertGameStatement.setString(4, (new Gson()).toJson(new ChessGame()));
 
                 if(insertGameStatement.executeUpdate() == 1) {
                     try(ResultSet generatedKeys = insertGameStatement.getGeneratedKeys()) {
@@ -64,13 +67,16 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(int gameID, String game) throws DataAccessException {
+    public void updateGame(int gameID, ChessGame game) throws DataAccessException {
         try {
             Connection conn = DatabaseManager.getConnection();
 
+            if (getGame(gameID) == null) {
+                throw (new DataAccessException("Game not exist"));
+            }
             String stmt = "UPDATE game SET game = ? WHERE id = ?;";
             try (var updateGameStatement = conn.prepareStatement(stmt)) {
-                updateGameStatement.setString(1, game);
+                updateGameStatement.setString(1, serializeGame(game));
                 updateGameStatement.setInt(2,  gameID);
 
                 updateGameStatement.executeUpdate();
@@ -98,7 +104,7 @@ public class SQLGameDAO implements GameDAO{
                         String blackUsername = result.getString("blackUsername");
                         String name = result.getString("name");
                         String game = result.getString("game");
-                        return new GameData(gameID, whiteUsername, blackUsername, name, game);
+                        return new GameData(gameID, whiteUsername, blackUsername, name, deserializeGame(game));
                         //String stmt = "INSERT INTO game (whiteUsername, blackUsername, name, game) VALUES (?, ?, ?, ?);";
                     }
                 }
@@ -125,7 +131,7 @@ public class SQLGameDAO implements GameDAO{
                         String blackUsername = result.getString("blackUsername");
                         String name = result.getString("name");
                         String game = result.getString("game");
-                        gameList.add(new GameData(id, whiteUsername, blackUsername, name, game));
+                        gameList.add(new GameData(id, whiteUsername, blackUsername, name, deserializeGame(game)));
                     }
                 }
             }
@@ -177,4 +183,7 @@ public class SQLGameDAO implements GameDAO{
     public void addGameWatcher(int gameID, String username) {
         ;
     }
+
+    private ChessGame deserializeGame(String string) { return gson.fromJson(string, ChessGame.class);}
+    private String serializeGame(ChessGame game) { return gson.toJson(game); }
 }

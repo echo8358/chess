@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Stack;
 
 import static java.lang.Math.abs;
@@ -38,6 +39,19 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) { teamTurn = team; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn && Objects.equals(tryStack, chessGame.tryStack);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, teamTurn, tryStack);
+    }
 
     /**
      * Enum identifying the 2 possible teams in a chess game

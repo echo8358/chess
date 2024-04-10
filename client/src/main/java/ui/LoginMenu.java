@@ -1,5 +1,6 @@
 package ui;
 
+import ServerFacade.HttpCommunicator;
 import ServerFacade.ServerFacade;
 import model.AuthData;
 

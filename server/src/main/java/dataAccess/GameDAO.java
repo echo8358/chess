@@ -20,6 +20,6 @@ public interface GameDAO {
     void setGameWhite(int gameID, String username) throws DataAccessException;
     void setGameBlack(int gameID, String username) throws DataAccessException;
     void addGameWatcher(int gameID, String username);
-    void updateGame(int gameID, String game) throws DataAccessException;
+    void updateGame(int gameID, ChessGame game) throws DataAccessException;
 
 }

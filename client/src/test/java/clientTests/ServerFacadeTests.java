@@ -1,10 +1,7 @@
 package clientTests;
 
-import ServerFacade.ServerFacade;
+import ServerFacade.HttpCommunicator;
 import ServerFacade.ResponseException;
-import dataAccess.Exceptions.BadRequestException;
-import dataAccess.Exceptions.ForbiddenException;
-import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
@@ -17,13 +14,13 @@ import java.util.Objects;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ServerFacade serverFacade;
+    private static HttpCommunicator serverFacade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
-        serverFacade = new ServerFacade("http://localhost:"+Integer.toString(port));
+        serverFacade = new HttpCommunicator("http://localhost:"+Integer.toString(port));
         System.out.println("Started test HTTP server on " + port);
     }
 

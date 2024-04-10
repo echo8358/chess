@@ -1,5 +1,9 @@
 package dataAccessTests;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import dataAccess.AuthDAO;
 import dataAccess.Exceptions.DataAccessException;
 import dataAccess.GameDAO;
@@ -49,15 +53,21 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void updateGameNegative() throws DataAccessException {
-        gameDAO.createGame("game");
+    void updateGameNegative() throws DataAccessException, InvalidMoveException {
+        int id = gameDAO.createGame("game");
         ArrayList<GameData> gameList = gameDAO.listGames();
 
-        //this method doesn't return anything. So I don't know what to test ¯\_(ツ)_/¯
-        gameDAO.updateGame(3676, "this is a game that doesn't exist");
+        ChessGame tempGame = new ChessGame();
+        tempGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1), null));
 
-        //make sure it hasn't made any other changes to the database.
-        assertEquals(gameList,gameDAO.listGames());
+        assertThrows(DataAccessException.class, () -> {
+            gameDAO.updateGame(3676, tempGame);
+        });
+
+        GameData updatedGame = gameDAO.getGame(id);
+
+        assertEquals(new ChessGame(), updatedGame.game());
+
     }
 
     @Test
@@ -114,19 +124,22 @@ class SQLGameDAOTest {
         assertEquals(game.gameName(), "game0");
         assertNull(game.whiteUsername());
         assertNull(game.blackUsername());
-        assertEquals(game.game(), "");
+        assertEquals(new ChessGame(), game.game() );
     }
 
     @Test
-    void updateGamePositive() throws DataAccessException {
+    void updateGamePositive() throws DataAccessException, InvalidMoveException {
         int id = gameDAO.createGame("game0");
         GameData old_game = gameDAO.getGame(id);
-        gameDAO.updateGame(id, "thisrepresentsanupdatedgame");
 
-        GameData new_game = gameDAO.getGame(id);
+        ChessGame tempGame = new ChessGame();
+        tempGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1), null));
 
-        assertNotEquals(old_game.game(),new_game.game());
-        assertEquals(new_game.game(),"thisrepresentsanupdatedgame");
+        gameDAO.updateGame(id, tempGame);
+
+        GameData updatedGame = gameDAO.getGame(id);
+
+        assertEquals(tempGame, updatedGame.game());
     }
 
     @Test
@@ -138,7 +151,7 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void listGamesPositive() throws DataAccessException {
+    void listGamesPositive() throws DataAccessException, InvalidMoveException {
         int id0 = gameDAO.createGame("game0");
         gameDAO.setGameWhite(id0, "echo");
 
@@ -152,7 +165,11 @@ class SQLGameDAOTest {
         int id3 = gameDAO.createGame("game3");
         gameDAO.setGameWhite(id3, "echo");
         gameDAO.setGameBlack(id3, "notecho");
-        gameDAO.updateGame(id3, "wow,suchgame");
+
+        ChessGame tempGame = new ChessGame();
+        tempGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1), null));
+
+        gameDAO.updateGame(id3, tempGame);
 
         ArrayList<GameData> gameList = gameDAO.listGames();
 
@@ -169,7 +186,7 @@ class SQLGameDAOTest {
         assertEquals(gameList.get(3).gameName(), "game3");
         assertEquals(gameList.get(3).whiteUsername(), "echo");
         assertEquals(gameList.get(3).blackUsername(), "notecho");
-        assertEquals(gameList.get(3).game(), "wow,suchgame");
+        assertEquals(gameList.get(3).game(), tempGame);
     }
 
     @Test

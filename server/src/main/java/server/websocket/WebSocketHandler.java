@@ -6,17 +6,23 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import dataAccess.AuthDAO;
 import dataAccess.Exceptions.DataAccessException;
+import dataAccess.GameDAO;
 import dataAccess.SQLAuthDAO;
+import dataAccess.SQLGameDAO;
 import model.AuthData;
+import model.GameData;
+import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 
 
@@ -26,6 +32,7 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
     private final Gson gson;
     private final AuthDAO authDAO = new SQLAuthDAO();
+    private final GameDAO gameDAO = new SQLGameDAO();
 
     public WebSocketHandler() {
         gson = createSerializer();
@@ -49,23 +56,68 @@ public class WebSocketHandler {
     }
 
     private void joinObserver(JoinObserver command, Session session) throws IOException {
-        connections.add("username",session, 1);
-        connections.broadcast(1, "", new Notification(command.toString()));
+        AuthData auth = checkAuth(command, session);
+        if(auth == null) return;
+
+        GameData game = checkGame(command.getGameID(), session);
+        if(game == null) return;
+
+        connections.add(auth.username(),session, command.getGameID());
+        session.getRemote().sendString(gson.toJson(new LoadGame(new ChessGame())));
+        connections.broadcast(command.getGameID(), auth.username(), new Notification(auth.username()+" has joined as an observer"));
     }
     private void joinPlayer(JoinPlayer command, Session session) throws IOException {
-        AuthData auth;
-        try {
-            auth = authDAO.getAuthFromToken(command.getAuthString());
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+        AuthData auth = checkAuth(command, session);
+        if (auth == null) return;
+
+        GameData game = checkGame(command.getGameID(), session);
+        if (game == null) return;
+
+        if(command.getPlayerColor() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), auth.username())) {
+            session.getRemote().sendString(gson.toJson(new Error("Spot taken or wrong team error")));
+            return;
         }
+        if(command.getPlayerColor() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), auth.username())) {
+            session.getRemote().sendString(gson.toJson(new Error("Spot taken or wrong team error")));
+            return;
+        }
+
         Connection rootConnection = connections.add(auth.username(), session, command.getGameID());
         connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" joined as "+command.getPlayerColor())));
-        rootConnection.send(gson.toJson(new LoadGame(new ChessGame())));
+        rootConnection.send(gson.toJson(new LoadGame(game.game())));
     }
     private void leave(Leave command, Session session) {}
     private void makeMove(MakeMove command, Session session) {}
     private void resign(Resign command, Session session) {}
+    private AuthData checkAuth(UserGameCommand command, Session session) throws IOException {
+        AuthData auth;
+        try {
+            auth = authDAO.getAuthFromToken(command.getAuthString());
+            if(auth == null) {
+                session.getRemote().sendString(gson.toJson(new Error("Invalid auth token error")));
+                return null;
+            }
+        } catch (DataAccessException e) {
+            session.getRemote().sendString(gson.toJson(new Error("Internal server error")));
+            return null;
+        }
+        return auth;
+    }
+    private GameData checkGame(int gameID, Session session) throws IOException {
+        GameData game;
+        try {
+            game = gameDAO.getGame(gameID);
+            if (game == null) {
+                session.getRemote().sendString(gson.toJson(new Error("Invalid game id error")));
+                return null;
+            }
+        } catch (DataAccessException e) {
+            session.getRemote().sendString(gson.toJson(new Error("Internal server error")));
+            return null;
+        }
+        return game;
+
+    }
     /*
     private void enter(String visitorName, Session session) throws IOException {
         connections.add(visitorName, session);
