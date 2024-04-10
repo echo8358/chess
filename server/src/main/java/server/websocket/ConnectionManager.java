@@ -12,9 +12,10 @@ public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
     private final Gson gson = new Gson();
 
-    public void add(String username, Session session, int gameID) {
+    public Connection add(String username, Session session, int gameID) {
         var connection = new Connection(username, session, gameID);
         connections.put(username, connection);
+        return connection;
     }
 
     public void remove(String visitorName) {
