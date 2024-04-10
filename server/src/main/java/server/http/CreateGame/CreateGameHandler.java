@@ -1,4 +1,4 @@
-package server.CreateGame;
+package server.http.CreateGame;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.DataAccessException;

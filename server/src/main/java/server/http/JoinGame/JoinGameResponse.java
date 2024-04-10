@@ -1,3 +1,3 @@
-package server.JoinGame;
+package server.http.JoinGame;
 
 public record JoinGameResponse() { }

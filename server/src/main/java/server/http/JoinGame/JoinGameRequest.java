@@ -1,4 +1,4 @@
-package server.JoinGame;
+package server.http.JoinGame;
 
 public record JoinGameRequest(String playerColor, int gameID, String auth) {
     public JoinGameRequest withAuth(String auth) {

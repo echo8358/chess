@@ -1,31 +1,34 @@
-package server.Logout;
+package server.http.ListGame;
 
+import com.google.gson.Gson;
 import dataAccess.Exceptions.DataAccessException;
 import dataAccess.Exceptions.UnauthorizedException;
-import service.UserService;
+import service.GameService;
 import spark.Request;
 import spark.Response;
 
-public class LogoutHandler {
-    public String handle(Request req, Response res){
-        LogoutRequest logoutRequest = new LogoutRequest(req.headers("authorization"));
+public class ListGameHandler {
+    public String handle(Request req, Response res) {
+        Gson gson = new Gson();
 
-        //invalid requests
-        if (logoutRequest.authToken() == null) {
+        ListGameRequest listGameRequest = new ListGameRequest(req.headers("authorization"));
+
+        if (listGameRequest.auth() == null) {
             res.status(400);
             return "{ \"message\" : \"Error: bad request\" }";
         }
 
         try {
-            LogoutResponse logoutResponse = (new UserService()).logout(logoutRequest);
+            ListGameResponse listGameResponse = (new GameService()).listGames(listGameRequest);
             res.status(200);
-            return "";
-        } catch (UnauthorizedException e){
+            return gson.toJson(listGameResponse);
+        } catch (UnauthorizedException e) {
             res.status(401);
             return "{ \"message\" : \"Error: unauthorized\" }";
         } catch (DataAccessException e) {
             res.status(500);
             return "{ \"message\" : \"Error: internal server error "+ e.getMessage()+"\" }";
         }
+
     }
 }

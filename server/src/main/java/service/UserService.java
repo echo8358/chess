@@ -7,14 +7,12 @@ import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import server.Login.LoginRequest;
-import server.Login.LoginResponse;
-import server.Logout.LogoutRequest;
-import server.Logout.LogoutResponse;
-import server.Register.RegisterRequest;
-import server.Register.RegisterResponse;
-
-import java.util.Objects;
+import server.http.Login.LoginRequest;
+import server.http.Login.LoginResponse;
+import server.http.Logout.LogoutRequest;
+import server.http.Logout.LogoutResponse;
+import server.http.Register.RegisterRequest;
+import server.http.Register.RegisterResponse;
 
 public class UserService {
     static UserDAO userDAO = new SQLUserDAO();

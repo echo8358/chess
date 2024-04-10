@@ -1,11 +1,11 @@
 package server;
 
-import server.CreateGame.CreateGameHandler;
-import server.JoinGame.JoinGameHandler;
-import server.ListGame.ListGameHandler;
-import server.Login.LoginHandler;
-import server.Logout.LogoutHandler;
-import server.Register.RegisterHandler;
+import server.http.CreateGame.CreateGameHandler;
+import server.http.JoinGame.JoinGameHandler;
+import server.http.ListGame.ListGameHandler;
+import server.http.Login.LoginHandler;
+import server.http.Logout.LogoutHandler;
+import server.http.Register.RegisterHandler;
 import service.DBService;
 import spark.*;
 

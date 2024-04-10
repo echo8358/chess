@@ -1,4 +1,4 @@
-package server.Login;
+package server.http.Login;
 
 import model.UserData;
 

@@ -9,11 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.TestAbortedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.testClasses.TestException;
-import server.Register.RegisterRequest;
-import server.Register.RegisterResponse;
 import service.DBService;
 
 import java.util.ArrayList;

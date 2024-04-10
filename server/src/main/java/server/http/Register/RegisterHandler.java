@@ -1,4 +1,4 @@
-package server.Register;
+package server.http.Register;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.AlreadyTakenException;

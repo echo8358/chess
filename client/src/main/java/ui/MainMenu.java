@@ -1,22 +1,15 @@
 package ui;
 
 import ServerFacade.ServerFacade;
-import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
-import server.ListGame.ListGameResponse;
+import server.http.ListGame.ListGameResponse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.Scanner;
 
 import static java.lang.Math.abs;
-import static ui.EscapeSequences.*;
-import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
 import static ui.UIUtils.displayGame;
 import static ui.UIUtils.input;
 

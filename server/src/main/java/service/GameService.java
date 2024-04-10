@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataAccess.*;
 import dataAccess.Exceptions.BadRequestException;
 import dataAccess.Exceptions.DataAccessException;
@@ -8,12 +7,12 @@ import dataAccess.Exceptions.ForbiddenException;
 import dataAccess.Exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
-import server.CreateGame.CreateGameRequest;
-import server.CreateGame.CreateGameResponse;
-import server.JoinGame.JoinGameRequest;
-import server.JoinGame.JoinGameResponse;
-import server.ListGame.ListGameRequest;
-import server.ListGame.ListGameResponse;
+import server.http.CreateGame.CreateGameRequest;
+import server.http.CreateGame.CreateGameResponse;
+import server.http.JoinGame.JoinGameRequest;
+import server.http.JoinGame.JoinGameResponse;
+import server.http.ListGame.ListGameRequest;
+import server.http.ListGame.ListGameResponse;
 
 import java.util.Objects;
 

@@ -1,6 +1,4 @@
-package server.CreateGame;
-
-import model.AuthData;
+package server.http.CreateGame;
 
 public record CreateGameRequest (String gameName, String auth){
     public CreateGameRequest withAuth(String auth) {

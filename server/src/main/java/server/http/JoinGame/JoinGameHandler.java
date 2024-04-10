@@ -1,4 +1,4 @@
-package server.JoinGame;
+package server.http.JoinGame;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.BadRequestException;

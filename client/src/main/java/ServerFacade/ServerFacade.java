@@ -2,19 +2,16 @@ package ServerFacade;
 
 import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
-import server.JoinGame.JoinGameResponse;
-import server.ListGame.ListGameResponse;
+import server.http.JoinGame.JoinGameResponse;
+import server.http.ListGame.ListGameResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class ServerFacade {
     static String serverUrl;

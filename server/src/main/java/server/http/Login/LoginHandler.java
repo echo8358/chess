@@ -1,4 +1,4 @@
-package server.Login;
+package server.http.Login;
 
 import com.google.gson.Gson;
 import dataAccess.Exceptions.DataAccessException;

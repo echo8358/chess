@@ -1,4 +1,4 @@
-package server.ListGame;
+package server.http.ListGame;
 
 import model.GameData;
 
