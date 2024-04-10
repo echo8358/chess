@@ -50,5 +50,11 @@ public class ServerFacade {
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor playerColor) {
         webSocketCommunicator.joinPlayer(authToken, gameID, playerColor);
     }
+    public void joinObserver(String authToken, int gameID) {
+        webSocketCommunicator.joinObserver(authToken, gameID);
+    }
+    public void leave(String authToken, int gameID) {
+        webSocketCommunicator.leave(authToken, gameID);
+    }
 
 }

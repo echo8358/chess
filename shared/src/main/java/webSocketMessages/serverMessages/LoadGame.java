@@ -9,4 +9,8 @@ public class LoadGame extends ServerMessage {
         this.game = game;
         this.serverMessageType = ServerMessageType.LOAD_GAME;
     }
+
+    public ChessGame getGame() {
+        return game;
+    }
 }

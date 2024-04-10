@@ -9,6 +9,7 @@ import server.http.ListGame.ListGameResponse;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.abs;
 import static ui.UIUtils.displayGame;
@@ -20,31 +21,29 @@ public class MainMenu {
     public MainMenu(ServerFacade sF) {
         serverFacade = sF;
     }
-    public void display(AuthData auth) {
-        listGames(auth);
+    private static ChessGame.TeamColor boardColor;
+    private static ChessGame mostRecentGame;
+    private static AuthData auth;
+    public void display(AuthData a) {
+        auth = a;
+        listGames();
         while (true) {
             String line = input("(c)reate game, (l)ist games, (j)oin game, join (o)bserver, (lo)gout or (h)elp:");
             switch (line) {
                 case "c" -> {
-                    createGame(auth);
+                    createGame();
                 }
                 case "l" -> {
-                    listGames(auth);
+                    listGames();
                 }
                 case "j" -> {
-                    joinGame(auth);
-                    ChessGame game = new ChessGame();
-                    displayGame(game, "WHITE");
-                    displayGame(game, "BLACK");
+                    joinGame();
                 }
                 case "o" -> {
-                    joinObserver(auth);
-                    ChessGame game = new ChessGame();
-                    displayGame(game, "WHITE");
-                    displayGame(game, "BLACK");
+                    joinObserver();
                 }
                 case "lo" -> {
-                    logout(auth);
+                    logout();
                     return;
                 }
                 case "h" -> {
@@ -60,7 +59,17 @@ public class MainMenu {
         }
     }
 
-    private static void createGame(AuthData auth) {
+    public static void loadGame(ChessGame game) {
+        UIUtils.displayGame(game, boardColor);
+        mostRecentGame = game;
+    }
+    public static void reloadGame() {
+        if (mostRecentGame != null) {
+            UIUtils.displayGame(mostRecentGame, boardColor);
+        }
+    }
+
+    private static void createGame() {
         String gameName = input("Game Name: ");
         try {
             serverFacade.createGame(gameName, auth.authToken());
@@ -69,7 +78,7 @@ public class MainMenu {
         }
     }
 
-    private static void listGames(AuthData auth) {
+    private static void listGames() {
         try {
             System.out.println("Available games: ");
             ListGameResponse response = serverFacade.listGames(auth.authToken());
@@ -84,7 +93,7 @@ public class MainMenu {
         }
     }
 
-    private static void joinGame(AuthData auth) {
+    private static void joinGame() {
         String color = null;
         int gameID = Integer.parseInt(input("Game ID: "));
         while (!Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")) {
@@ -94,28 +103,72 @@ public class MainMenu {
         int trueGameID = gamesList.get(gameID).gameID();
         try {
             serverFacade.joinGame(color, trueGameID, auth.authToken());
+            serverFacade.joinPlayer(auth.authToken(), trueGameID, trueColor);
+            boardColor = trueColor;
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
-        serverFacade.joinPlayer(auth.authToken(), trueGameID, trueColor);
+        gameLoop(trueGameID);
     }
 
-    private static void joinObserver(AuthData auth) {
+    private static void joinObserver() {
         String color = null;
         int gameID = Integer.parseInt(input("Game ID: "));
+        int trueGameID = gamesList.get(gameID).gameID();
         try {
-            serverFacade.joinGame(null, gamesList.get(gameID).gameID(), auth.authToken());
+            serverFacade.joinGame(null, trueGameID, auth.authToken());
+            serverFacade.joinObserver(auth.authToken(), trueGameID);
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
+        observeLoop(trueGameID);
     }
 
-    private static void logout(AuthData auth) {
+    private static void logout() {
         try {
             serverFacade.logout(auth.authToken());
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
     }
+
+    private static void gameLoop(int gameID) {
+        String userInput;
+        boolean inGame = true;
+        while (inGame) {
+            userInput = UIUtils.input("(h)elp, re(d)raw board, (l)eave, (m)ake move, (r)esign, or h(i)ghlight legal moves");
+            switch (userInput) {
+                case "h" -> printGameHelp();
+                case "d" -> redrawBoard();
+                case "l" -> { leave(gameID); inGame = false; }
+                case "m" -> makeMove();
+                case "r" -> resign();
+                case "i" -> highlightLegalMoves();
+            }
+        }
+    }
+    private static void observeLoop(int gameID) {
+        String userInput;
+        boolean inGame = true;
+        while (inGame) {
+            userInput = UIUtils.input("(h)elp, re(d)raw board, (l)eave");
+            switch (userInput) {
+                case "h" -> printObserveHelp();
+                case "d" -> redrawBoard();
+                case "l" -> { leave(gameID); inGame = false; }
+            }
+        }
+    }
+    private static void printGameHelp() {}
+    private static void printObserveHelp() {}
+    private static void redrawBoard() {
+        MainMenu.reloadGame();
+    }
+    private static void leave(int gameID) {
+        serverFacade.leave(auth.authToken(), gameID);
+    }
+    private static void makeMove() {}
+    private static void resign() {}
+    private static void highlightLegalMoves() {}
 
 }

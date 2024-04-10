@@ -86,7 +86,13 @@ public class WebSocketHandler {
         connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" joined as "+command.getPlayerColor())));
         rootConnection.send(gson.toJson(new LoadGame(game.game())));
     }
-    private void leave(Leave command, Session session) {}
+    private void leave(Leave command, Session session) throws IOException {
+        AuthData auth = checkAuth(command, session);
+        if (auth == null) return;
+
+        connections.remove(auth.username());
+        connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" has left ")));
+    }
     private void makeMove(MakeMove command, Session session) {}
     private void resign(Resign command, Session session) {}
     private AuthData checkAuth(UserGameCommand command, Session session) throws IOException {

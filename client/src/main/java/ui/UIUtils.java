@@ -20,17 +20,17 @@ public class UIUtils {
         return scanner.nextLine();
     }
 
-     public static void displayGame(ChessGame game, String color) {
+     public static void displayGame(ChessGame game, ChessGame.TeamColor color) {
 
         ChessBoard board = game.getBoard();
         String squareColor = SET_BG_COLOR_WHITE;
         ChessPiece target = null;
         int yInt = 8;
         int yDir = -1;
-        if (Objects.equals(color, "BLACK")) { yInt = 1; yDir = 1; }
+        if (Objects.equals(color, ChessGame.TeamColor.BLACK)) { yInt = 1; yDir = 1; }
 
         System.out.println(SET_TEXT_COLOR_BLACK+SET_BG_COLOR_LIGHT_GREY);
-        if (color == "WHITE") System.out.println("  h  g  f  e  d  c  b  a  ");
+        if (color == ChessGame.TeamColor.WHITE) System.out.println("  h  g  f  e  d  c  b  a  ");
         else System.out.println("  a  b  c  d  e  f  g  h  ");
 
         for (int y = yInt; abs(y-yInt) < 8; y+=yDir){
@@ -57,7 +57,7 @@ public class UIUtils {
                 squareColor = SET_BG_COLOR_WHITE;
             }
         }
-        if (color == "WHITE") System.out.println("  h  g  f  e  d  c  b  a  ");
+        if (color == ChessGame.TeamColor.WHITE) System.out.println("  h  g  f  e  d  c  b  a  ");
         else System.out.println("  a  b  c  d  e  f  g  h  ");
 
     }
