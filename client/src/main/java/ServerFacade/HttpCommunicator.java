@@ -2,8 +2,8 @@ package ServerFacade;
 
 import com.google.gson.Gson;
 import model.AuthData;
-import server.http.JoinGame.JoinGameResponse;
-import server.http.ListGame.ListGameResponse;
+import responses.JoinGameResponse;
+import responses.ListGameResponse;
 import webSocketMessages.userCommands.JoinObserver;
 
 import java.io.IOException;
@@ -62,31 +62,6 @@ public class HttpCommunicator {
         }
 
     }
-
-    /*
-    public Pet addPet(Pet pet) throws ResponseException {
-        var path = "/pet";
-        return this.makeRequest("POST", path, pet, Pet.class);
-    }
-
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public void deleteAllPets() throws ResponseException {
-        var path = "/pet";
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public Pet[] listPets() throws ResponseException {
-        var path = "/pet";
-        record listPetResponse(Pet[] pet) {
-        }
-        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-        return response.pet();
-    }
-    */
 
     private <T> T makeRequest(String method, String path, String json, Class<T> responseClass, String authToken) throws ResponseException {
         try {
