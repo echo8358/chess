@@ -26,6 +26,7 @@ public class WebSocketCommunicator extends Endpoint {
         this.session = container.connectToServer(this, uri);
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
             public void onMessage(String message) {
                 ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
                 switch (serverMessage.getServerMessageType()) {
