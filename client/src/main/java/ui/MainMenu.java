@@ -4,6 +4,7 @@ import ServerFacade.HttpCommunicator;
 import ServerFacade.ServerFacade;
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
@@ -62,12 +63,12 @@ public class MainMenu {
     }
 
     public static void loadGame(ChessGame game) {
-        UIUtils.displayGame(game, boardColor);
+        UIUtils.displayGame(game, boardColor, null);
         mostRecentGame = game;
     }
     public static void reloadGame() {
         if (mostRecentGame != null) {
-            UIUtils.displayGame(mostRecentGame, boardColor);
+            UIUtils.displayGame(mostRecentGame, boardColor, null);
         }
     }
 
@@ -191,6 +192,18 @@ public class MainMenu {
             System.out.println("Invalid move, please try again");
         }
         ChessMove move = parseMove(moveString);
+        if (boardColor == ChessGame.TeamColor.WHITE && move.getEndPosition().getRow() == 8 || boardColor == ChessGame.TeamColor.BLACK && move.getEndPosition().getRow() == 1) {
+            String promotionSelection;
+            while (move.getPromotionPiece() == null) {
+                promotionSelection = input("select your promotion piece: (r)ook, (k)night, (b)ishop, or (q)ueen");
+                switch (promotionSelection) {
+                    case "r" -> move = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK);
+                    case "k" -> move = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT);
+                    case "b" -> move = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP);
+                    case "q" -> move = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN);
+                }
+            }
+        }
         serverFacade.makeMove(auth.authToken(), gameID, move);
     }
 
@@ -223,6 +236,25 @@ public class MainMenu {
     private static void resign(int gameID) {
         serverFacade.resign(auth.authToken(), gameID);
     }
-    private static void highlightLegalMoves() {}
+    private static void highlightLegalMoves() {
+        String validMovePos;
+        while (true) {
+            validMovePos = input("square to display valid moves for: ");
+            if (validMovePos.length() == 2) {
+                if (validMovePos.charAt(0) >= 'a' && validMovePos.charAt(0) <= 'h') {
+                    if (validMovePos.charAt(1) >= '1' && validMovePos.charAt(1) <= '8') {
+                        break;
+                    }
+                }
+            }
+            System.out.println("Invalid position. Please try again");
+        }
+        int posX = 8-(validMovePos.charAt(0)-'a');
+        int posY = 8-(validMovePos.charAt(1)-'1');
+
+        if (mostRecentGame != null) {
+            UIUtils.displayGame(mostRecentGame, boardColor, new ChessPosition(posY,posX));
+        }
+    }
 
 }

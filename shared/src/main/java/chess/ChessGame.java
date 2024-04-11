@@ -113,8 +113,8 @@ public class ChessGame {
 
             //en passant
             if(lastMove != null && abs(lastMove.getStartPosition().getRow()-lastMove.getEndPosition().getRow()) > 1
-                    && board.getPiece(lastMove.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN
-                    && board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN)
+                    && board.getPiece(lastMove.getEndPosition()) != null && board.getPiece(lastMove.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN
+                    && board.getPiece(move.getEndPosition()) != null && board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN)
             {
                 if(getTeamTurn() == TeamColor.WHITE && move.getEndPosition().getRow()-1 == lastMove.getEndPosition().getRow()
                         && move.getEndPosition().getColumn() == lastMove.getEndPosition().getColumn()) {

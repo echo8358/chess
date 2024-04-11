@@ -1,13 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
@@ -20,7 +15,18 @@ public class UIUtils {
         return scanner.nextLine();
     }
 
-     public static void displayGame(ChessGame game, ChessGame.TeamColor color) {
+     public static void displayGame(ChessGame game, ChessGame.TeamColor color, ChessPosition validMovePos) {
+        boolean[][] validMoveBoard = null;
+
+        if (validMovePos != null) {
+            validMoveBoard = new boolean[8][8];
+            Collection<ChessMove> validMoves = game.validMoves(validMovePos);
+            for (ChessMove move: validMoves) {
+                validMoveBoard[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = true;
+            }
+            System.out.println(validMoves);
+            System.out.println(Arrays.deepToString(validMoveBoard));
+        }
 
         ChessBoard board = game.getBoard();
         String squareColor = SET_BG_COLOR_WHITE;
@@ -38,22 +44,26 @@ public class UIUtils {
             for (int x = 1; x < 9; x++) {
                 target = board.getPiece(new ChessPosition(y,x));
 
+                if (validMoveBoard != null && validMoveBoard[y-1][x-1]) {
+                    if (squareColor.equals(SET_BG_COLOR_WHITE)) squareColor = SET_BG_COLOR_GREEN;
+                    if (squareColor.equals(SET_BG_COLOR_DARK_GREY)) squareColor = SET_BG_COLOR_DARK_GREEN;
+                }
                 if (target != null) {
                     System.out.print(squareColor+getTextColorFromPieceColor(target.getTeamColor()));
                     System.out.print(" "+getCharFromPieceType(target.getPieceType())+" ");
                 }
                 if (target == null) System.out.print(squareColor+"   ");
 
-                if (squareColor.equals(SET_BG_COLOR_WHITE)) {
+                if (squareColor.equals(SET_BG_COLOR_WHITE) || squareColor.equals((SET_BG_COLOR_GREEN))) {
                     squareColor = SET_BG_COLOR_DARK_GREY;
-                } else if (squareColor.equals(SET_BG_COLOR_DARK_GREY)) {
+                } else if (squareColor.equals(SET_BG_COLOR_DARK_GREY) || squareColor.equals(SET_BG_COLOR_DARK_GREEN)) {
                     squareColor = SET_BG_COLOR_WHITE;
                 }
             }
             System.out.println(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(9-y));
-            if (squareColor.equals(SET_BG_COLOR_WHITE)) {
+            if (squareColor.equals(SET_BG_COLOR_WHITE) || squareColor.equals(SET_BG_COLOR_GREEN)) {
                 squareColor = SET_BG_COLOR_DARK_GREY;
-            } else if (squareColor.equals(SET_BG_COLOR_DARK_GREY)) {
+            } else if (squareColor.equals(SET_BG_COLOR_DARK_GREY) || squareColor.equals(SET_BG_COLOR_DARK_GREEN)) {
                 squareColor = SET_BG_COLOR_WHITE;
             }
         }

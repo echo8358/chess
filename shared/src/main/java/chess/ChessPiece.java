@@ -121,7 +121,7 @@ public class ChessPiece {
                         moves.add(new ChessMove(myPosition, targetPos, null));
                         if (teamColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2
                                 || teamColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
-                            targetPos = new ChessPosition(myPosition.getRow() + dir * 2, myPosition.getColumn());
+                            targetPos = new ChessPosition(myPosition.getRow() + (dir * 2), myPosition.getColumn());
                             if (board.getPiece(targetPos) == null) {
                                 moves.add(new ChessMove(myPosition, targetPos, null));
                             }
