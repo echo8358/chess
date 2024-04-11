@@ -124,7 +124,20 @@ public class WebSocketHandler {
 
                         //send new boards
                         connections.broadcast(command.getGameID(), null, (new LoadGame(game.game())));
-                        connections.broadcast(command.getGameID(), auth.username(), (new Notification("The move "+command.getMove().toString()+" was made")));
+                        connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" moved from "+
+                                (char)('a'+move.getStartPosition().getColumn()-1)+(char)('1'+move.getStartPosition().getRow()-1)
+                                + " to " + (char)('a'+move.getEndPosition().getColumn()-1)+(char)('1'+move.getEndPosition().getRow()-1))));
+
+                        if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                            connections.broadcast(command.getGameID(), null, (new Notification(game.whiteUsername()+" is in checkmate.")));
+                        } else if (game.game().isInCheck(ChessGame.TeamColor.WHITE)) {
+                            connections.broadcast(command.getGameID(), null, (new Notification(game.whiteUsername()+" is in check.")));
+                        }
+                        if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                            connections.broadcast(command.getGameID(), null, (new Notification(game.blackUsername()+" is in checkmate.")));
+                        } else if (game.game().isInCheck(ChessGame.TeamColor.BLACK)) {
+                            connections.broadcast(command.getGameID(), null, (new Notification(game.blackUsername()+" is in check.")));
+                        }
                         return;
                     }
                 }
@@ -134,7 +147,7 @@ public class WebSocketHandler {
             }
         }
         //notify error
-        session.getRemote().sendString(gson.toJson(new Error("Invalid move error, that move isn't in the valid move list.")));
+        session.getRemote().sendString(gson.toJson(new Error("Invalid move error. Is it your turn? Has the game been resigned?")));
 
     }
     private void resign(Resign command, Session session) throws IOException {

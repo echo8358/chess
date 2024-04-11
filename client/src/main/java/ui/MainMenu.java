@@ -77,7 +77,12 @@ public class MainMenu {
             GameData game;
             for (int i = 0; i < gamesList.size(); i++) {
                 game = gamesList.get(i);
-                System.out.println("("+(i)+") Name: "+game.gameName()+" White: "+ game.whiteUsername()+" Black: "+ game.blackUsername());
+                System.out.print("("+(i)+") Name: "+game.gameName()+" White: ");
+                if (game.whiteUsername() == null) System.out.print("--AVAILABLE--");
+                else System.out.print(game.whiteUsername());
+                System.out.print(" Black: ");
+                if (game.blackUsername() == null) System.out.println("--AVAILABLE--");
+                else System.out.println(game.blackUsername());
             }
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
@@ -107,6 +112,7 @@ public class MainMenu {
             boardColor = trueColor;
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
+            return;
         }
         try {
             Thread.sleep(500);
@@ -210,14 +216,12 @@ public class MainMenu {
     }
 
     private static ChessMove parseMove(String moveString) {
-        int startX = 8-(moveString.charAt(0)-'a');
-        int startY = 8-(moveString.charAt(1)-'1');
-        int endX = 8-(moveString.charAt(2)-'a');
-        int endY = 8-(moveString.charAt(3)-'1');
+        int startX = moveString.charAt(0)-'a'+1;
+        int startY = moveString.charAt(1)-'1'+1;
+        int endX = moveString.charAt(2)-'a'+1;
+        int endY = moveString.charAt(3)-'1'+1;
 
-        ChessMove move = new ChessMove(new ChessPosition(startY, startX), new ChessPosition(endY, endX), null);
-        System.out.println(move);
-        return move;
+        return new ChessMove(new ChessPosition(startY, startX), new ChessPosition(endY, endX), null);
     }
 
     private static boolean validateMove(String moveString) {
@@ -249,8 +253,8 @@ public class MainMenu {
             }
             System.out.println("Invalid position. Please try again");
         }
-        int posX = 8-(validMovePos.charAt(0)-'a');
-        int posY = 8-(validMovePos.charAt(1)-'1');
+        int posX = validMovePos.charAt(0)-'a'+1;
+        int posY = validMovePos.charAt(1)-'1'+1;
 
         if (mostRecentGame != null) {
             UIUtils.displayGame(mostRecentGame, boardColor, new ChessPosition(posY,posX));

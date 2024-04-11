@@ -21,8 +21,10 @@ public class UIUtils {
         if (validMovePos != null) {
             validMoveBoard = new boolean[8][8];
             Collection<ChessMove> validMoves = game.validMoves(validMovePos);
-            for (ChessMove move: validMoves) {
-                validMoveBoard[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = true;
+            if (validMoves != null) {
+                for (ChessMove move : validMoves) {
+                    validMoveBoard[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = true;
+                }
             }
         }
 
@@ -31,14 +33,22 @@ public class UIUtils {
         ChessPiece target = null;
         int yInt = 8;
         int yDir = -1;
-        if (Objects.equals(color, ChessGame.TeamColor.BLACK)) { yInt = 1; yDir = 1; }
+        int xInt = 1;
+        int xDir = 1;
+        if (Objects.equals(color, ChessGame.TeamColor.BLACK)) {
+            yInt = 1;
+            yDir = 1;
+            xInt = 8;
+            xDir = -1;
+        }
 
         System.out.println(SET_TEXT_COLOR_BLACK+SET_BG_COLOR_LIGHT_GREY);
-        System.out.println("  h  g  f  e  d  c  b  a  ");
+        if (color == ChessGame.TeamColor.WHITE) System.out.println("  a  b  c  d  e  f  g  h  ");
+        else System.out.println("  h  g  f  e  d  c  b  a  ");
 
         for (int y = yInt; abs(y-yInt) < 8; y+=yDir){
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(9-y));
-            for (int x = 1; x < 9; x++) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(y));
+            for (int x = xInt; abs(x-xInt) < 8; x+=xDir) {
                 target = board.getPiece(new ChessPosition(y,x));
 
                 if (validMoveBoard != null && validMoveBoard[y-1][x-1]) {
@@ -57,14 +67,15 @@ public class UIUtils {
                     squareColor = SET_BG_COLOR_WHITE;
                 }
             }
-            System.out.println(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(9-y));
+            System.out.println(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(y));
             if (squareColor.equals(SET_BG_COLOR_WHITE) || squareColor.equals(SET_BG_COLOR_GREEN)) {
                 squareColor = SET_BG_COLOR_DARK_GREY;
             } else if (squareColor.equals(SET_BG_COLOR_DARK_GREY) || squareColor.equals(SET_BG_COLOR_DARK_GREEN)) {
                 squareColor = SET_BG_COLOR_WHITE;
             }
         }
-        System.out.println("  h  g  f  e  d  c  b  a  ");
+        if (color == ChessGame.TeamColor.WHITE) System.out.println("  a  b  c  d  e  f  g  h  ");
+        else System.out.println("  h  g  f  e  d  c  b  a  ");
 
     }
 
