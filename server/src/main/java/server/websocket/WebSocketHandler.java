@@ -97,21 +97,44 @@ public class WebSocketHandler {
         connections.remove(auth.username());
         connections.broadcast(command.getGameID(), auth.username(), (new Notification("Player "+auth.username()+" has left ")));
     }
-    private void makeMove(MakeMove command, Session session) throws DataAccessException {
-        GameData game = gameDAO.getGame(command.getGameID());
-        Collection<ChessMove> validMoves = game.game().validMoves(command.getMove().getStartPosition());
-        try {
-            for (ChessMove move : validMoves) {
-                if (move == command.getMove()) {
-                    game.game().makeMove(command.getMove());
-                    //send new boards
-                    return;
-                }
+    private void makeMove(MakeMove command, Session session) throws IOException {
+        AuthData auth = checkAuth(command, session);
+        if (auth == null) return;
+
+        GameData game = checkGame(command.getGameID(), session);
+
+        ChessGame.TeamColor teamColor;
+
+        if (game != null) {
+            if (Objects.equals(auth.username(), game.blackUsername())) teamColor = ChessGame.TeamColor.BLACK;
+            else if (Objects.equals(auth.username(), game.whiteUsername())) teamColor = ChessGame.TeamColor.WHITE;
+            else {
+                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
+                return;
             }
-        } catch (InvalidMoveException ignore) {}
+
+            if (game.game().getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != teamColor) {
+                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
+                return;
+            }
+
+            Collection<ChessMove> validMoves = game.game().validMoves(command.getMove().getStartPosition());
+            try {
+                for (ChessMove move : validMoves) {
+                    if (move.equals(command.getMove())) {
+                        System.out.println(move.toString());
+                        game.game().makeMove(command.getMove());
+
+                        //send new boards
+                        connections.broadcast(command.getGameID(), null, (new LoadGame(game.game())));
+                        connections.broadcast(command.getGameID(), auth.username(), (new Notification("The move ___ was made")));
+                        return;
+                    }
+                }
+            } catch (InvalidMoveException e) { System.out.println(e.getMessage());}
+        }
         //notify error
-
-
+        session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
 
     }
     private void resign(Resign command, Session session) {}

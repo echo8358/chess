@@ -1,6 +1,7 @@
 package ServerFacade;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import model.AuthData;
 import server.http.JoinGame.JoinGameResponse;
 import server.http.ListGame.ListGameResponse;
@@ -55,6 +56,9 @@ public class ServerFacade {
     }
     public void leave(String authToken, int gameID) {
         webSocketCommunicator.leave(authToken, gameID);
+    }
+    public void makeMove(String authToken, int gameID, ChessMove move) {
+        webSocketCommunicator.makeMove(authToken, gameID, move);
     }
 
 }
