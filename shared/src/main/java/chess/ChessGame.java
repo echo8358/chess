@@ -19,6 +19,7 @@ public class ChessGame {
     private TeamColor teamTurn;
     private final Stack<HistoricalMove> tryStack;
     private static final Stack<HistoricalMove> historyStack = new Stack<>();
+    private boolean resigned = false;
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
@@ -69,23 +70,25 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece targetPiece = board.getPiece(startPosition);
-        if(targetPiece != null ) {
-            Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board, startPosition);
-            HashSet<ChessMove> validMoveSet = new HashSet<>();
-            for (ChessMove possibleMove : possibleMoves) {
-                tryMove(possibleMove);
-                if (isInCheck(targetPiece.getTeamColor())) {
+            ChessPiece targetPiece = board.getPiece(startPosition);
+            if (targetPiece != null) {
+                Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board, startPosition);
+                HashSet<ChessMove> validMoveSet = new HashSet<>();
+                if (resigned) return validMoveSet;
+                for (ChessMove possibleMove : possibleMoves) {
+                    tryMove(possibleMove);
+                    if (isInCheck(targetPiece.getTeamColor())) {
+                        untryMove();
+                        continue;
+                    }
+                    validMoveSet.add(possibleMove);
                     untryMove();
-                    continue;
                 }
-                validMoveSet.add(possibleMove);
-                untryMove();
+                //if(validMoveSet.isEmpty()) { return null;}
+                return validMoveSet;
             }
-            //if(validMoveSet.isEmpty()) { return null;}
-            return validMoveSet;
-        }
         return null;
+
     }
 
     /**
@@ -241,5 +244,12 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.board;
+    }
+
+    public void setResigned(boolean b) {
+        resigned = b;
+    }
+    public boolean isResigned() {
+        return resigned;
     }
 }

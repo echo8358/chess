@@ -109,12 +109,12 @@ public class WebSocketHandler {
             if (Objects.equals(auth.username(), game.blackUsername())) teamColor = ChessGame.TeamColor.BLACK;
             else if (Objects.equals(auth.username(), game.whiteUsername())) teamColor = ChessGame.TeamColor.WHITE;
             else {
-                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
+                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, you cannot move pieces as an observer.")));
                 return;
             }
 
             if (game.game().getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != teamColor) {
-                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
+                session.getRemote().sendString(gson.toJson(new Error("Invalid move error, that piece isn't yours")));
                 return;
             }
 
@@ -124,20 +124,50 @@ public class WebSocketHandler {
                     if (move.equals(command.getMove())) {
                         System.out.println(move.toString());
                         game.game().makeMove(command.getMove());
+                        gameDAO.updateGame(game.gameID(), game.game());
 
                         //send new boards
                         connections.broadcast(command.getGameID(), null, (new LoadGame(game.game())));
-                        connections.broadcast(command.getGameID(), auth.username(), (new Notification("The move ___ was made")));
+                        connections.broadcast(command.getGameID(), auth.username(), (new Notification("The move "+command.getMove().toString()+" was made")));
                         return;
                     }
                 }
             } catch (InvalidMoveException e) { System.out.println(e.getMessage());}
+            catch (DataAccessException e) {
+                session.getRemote().sendString(gson.toJson(new Error("Internal server error. Please try again.")));
+            }
         }
         //notify error
-        session.getRemote().sendString(gson.toJson(new Error("Invalid move error, please try again")));
+        session.getRemote().sendString(gson.toJson(new Error("Invalid move error, that move isn't in the valid move list.")));
 
     }
-    private void resign(Resign command, Session session) {}
+    private void resign(Resign command, Session session) throws IOException {
+        AuthData auth = checkAuth(command, session);
+        if (auth == null) return;
+
+        GameData game = checkGame(command.getGameID(), session);
+        if (game == null) return;
+
+        if (!Objects.equals(auth.username(), game.whiteUsername()) && !Objects.equals(auth.username(), game.blackUsername()))
+        {
+            session.getRemote().sendString(gson.toJson(new Error("Observers cannot resign error.")));
+            return;
+        }
+        if (game.game().isResigned()) {
+            session.getRemote().sendString(gson.toJson(new Error("Game is already resigned error.")));
+            return;
+        }
+        //mark game as over
+        game.game().setResigned(true);
+        try {
+            gameDAO.updateGame(game.gameID(), game.game());
+        } catch (DataAccessException e) {
+            session.getRemote().sendString(gson.toJson(new Error("Internal server error. Could not resign.")));
+        }
+
+        //send notification to all connected people
+        connections.broadcast(game.gameID(), null, new Notification("Player "+auth.username()+" has resigned."));
+    }
     private AuthData checkAuth(UserGameCommand command, Session session) throws IOException {
         AuthData auth;
         try {

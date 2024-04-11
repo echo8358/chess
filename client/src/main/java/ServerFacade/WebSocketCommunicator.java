@@ -1,6 +1,7 @@
 package ServerFacade;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -69,6 +70,21 @@ public class WebSocketCommunicator extends Endpoint {
     public void leave(String authToken, int gameID) {
         try {
             send(gson.toJson(new Leave(authToken, gameID)));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void makeMove(String authToken, int gameID, ChessMove move) {
+        try {
+            send(gson.toJson(new MakeMove(authToken, gameID, move)));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    public void resign(String authToken, int gameID) {
+        try {
+            send(gson.toJson(new Resign(authToken, gameID)));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

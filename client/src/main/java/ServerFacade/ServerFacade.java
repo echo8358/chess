@@ -60,5 +60,8 @@ public class ServerFacade {
     public void makeMove(String authToken, int gameID, ChessMove move) {
         webSocketCommunicator.makeMove(authToken, gameID, move);
     }
+    public void resign(String authToken, int gameID) {
+        webSocketCommunicator.resign(authToken, gameID);
+    }
 
 }

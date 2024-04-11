@@ -3,6 +3,8 @@ package ui;
 import ServerFacade.HttpCommunicator;
 import ServerFacade.ServerFacade;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import server.http.ListGame.ListGameResponse;
@@ -141,8 +143,8 @@ public class MainMenu {
                 case "h" -> printGameHelp();
                 case "d" -> redrawBoard();
                 case "l" -> { leave(gameID); inGame = false; }
-                case "m" -> makeMove();
-                case "r" -> resign();
+                case "m" -> makeMove(gameID);
+                case "r" -> resign(gameID);
                 case "i" -> highlightLegalMoves();
             }
         }
@@ -179,8 +181,48 @@ public class MainMenu {
     private static void leave(int gameID) {
         serverFacade.leave(auth.authToken(), gameID);
     }
-    private static void makeMove() {}
-    private static void resign() {}
+    private static void makeMove(int gameID) {
+        String moveString;
+        while (true) {
+            moveString = input("Input move: ");
+            if (validateMove(moveString)) {
+                break;
+            }
+            System.out.println("Invalid move, please try again");
+        }
+        ChessMove move = parseMove(moveString);
+        serverFacade.makeMove(auth.authToken(), gameID, move);
+    }
+
+    private static ChessMove parseMove(String moveString) {
+        int startX = 8-(moveString.charAt(0)-'a');
+        int startY = 8-(moveString.charAt(1)-'1');
+        int endX = 8-(moveString.charAt(2)-'a');
+        int endY = 8-(moveString.charAt(3)-'1');
+
+        ChessMove move = new ChessMove(new ChessPosition(startY, startX), new ChessPosition(endY, endX), null);
+        System.out.println(move);
+        return move;
+    }
+
+    private static boolean validateMove(String moveString) {
+        if (moveString.length() == 4) {
+            if (moveString.charAt(0) >= 'a' && moveString.charAt(0) <= 'h') {
+                if (moveString.charAt(1) >= '1' && moveString.charAt(1) <= '8') {
+                    if (moveString.charAt(2) >= 'a' && moveString.charAt(2) <= 'h') {
+                        if (moveString.charAt(3) >= '1' && moveString.charAt(3) <= '8') {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void resign(int gameID) {
+        serverFacade.resign(auth.authToken(), gameID);
+    }
     private static void highlightLegalMoves() {}
 
 }
