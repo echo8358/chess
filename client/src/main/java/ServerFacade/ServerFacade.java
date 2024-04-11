@@ -3,10 +3,7 @@ package ServerFacade;
 import chess.ChessGame;
 import chess.ChessMove;
 import model.AuthData;
-import server.http.JoinGame.JoinGameResponse;
-import server.http.ListGame.ListGameResponse;
-
-import java.net.URL;
+import responses.ListGameResponse;
 
 public class ServerFacade {
     HttpCommunicator httpCommunicator;

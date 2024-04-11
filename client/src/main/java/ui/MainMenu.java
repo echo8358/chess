@@ -1,6 +1,5 @@
 package ui;
 
-import ServerFacade.HttpCommunicator;
 import ServerFacade.ServerFacade;
 import chess.ChessGame;
 import chess.ChessMove;
@@ -8,19 +7,16 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
-import server.http.ListGame.ListGameResponse;
+import responses.ListGameResponse;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import static java.lang.Math.abs;
-import static ui.UIUtils.displayGame;
 import static ui.UIUtils.input;
 
 public class MainMenu {
     private static ServerFacade serverFacade;
-    private static ArrayList<GameData> gamesList = new ArrayList<GameData>() {};
+    private static ArrayList<GameData> gamesList = new ArrayList<>() {};
     public MainMenu(ServerFacade sF) {
         serverFacade = sF;
     }
@@ -33,18 +29,10 @@ public class MainMenu {
         while (true) {
             String line = input("(c)reate game, (l)ist games, (j)oin game, join (o)bserver, (lo)gout or (h)elp:");
             switch (line) {
-                case "c" -> {
-                    createGame();
-                }
-                case "l" -> {
-                    listGames();
-                }
-                case "j" -> {
-                    joinGame();
-                }
-                case "o" -> {
-                    joinObserver();
-                }
+                case "c" ->  createGame();
+                case "l" ->  listGames();
+                case "j" -> joinGame();
+                case "o" -> joinObserver();
                 case "lo" -> {
                     logout();
                     return;
@@ -86,10 +74,10 @@ public class MainMenu {
             System.out.println("Available games: ");
             ListGameResponse response = serverFacade.listGames(auth.authToken());
             gamesList = response.games();
-            GameData game = null;
+            GameData game;
             for (int i = 0; i < gamesList.size(); i++) {
                 game = gamesList.get(i);
-                System.out.println("("+Integer.toString(i)+") Name: "+game.gameName()+" White: "+ game.whiteUsername()+" Black: "+ game.blackUsername());
+                System.out.println("("+(i)+") Name: "+game.gameName()+" White: "+ game.whiteUsername()+" Black: "+ game.blackUsername());
             }
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
@@ -115,7 +103,6 @@ public class MainMenu {
     }
 
     private static void joinObserver() {
-        String color = null;
         int gameID = Integer.parseInt(input("Game ID: "));
         int trueGameID = gamesList.get(gameID).gameID();
         try {
@@ -223,9 +210,7 @@ public class MainMenu {
             if (moveString.charAt(0) >= 'a' && moveString.charAt(0) <= 'h') {
                 if (moveString.charAt(1) >= '1' && moveString.charAt(1) <= '8') {
                     if (moveString.charAt(2) >= 'a' && moveString.charAt(2) <= 'h') {
-                        if (moveString.charAt(3) >= '1' && moveString.charAt(3) <= '8') {
-                            return true;
-                        }
+                        return moveString.charAt(3) >= '1' && moveString.charAt(3) <= '8';
                     }
                 }
             }
