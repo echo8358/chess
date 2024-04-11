@@ -4,11 +4,9 @@ import dataAccess.Exceptions.AlreadyTakenException;
 import dataAccess.Exceptions.DataAccessException;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -31,7 +29,7 @@ public class SQLUserDAO implements UserDAO{
 
     }
 
-    public void createUser(UserData user) throws AlreadyTakenException, DataAccessException {
+    public void createUser(UserData user) throws DataAccessException {
         try {
             Connection conn = DatabaseManager.getConnection();
 
@@ -73,10 +71,10 @@ public class SQLUserDAO implements UserDAO{
                 getUserStatement.setString(1, username);
                 try (ResultSet result = getUserStatement.executeQuery()) {
                     if (result.next()) {
-                        String new_username = result.getString("username");
+                        String newUsername = result.getString("username");
                         String password = result.getString("password");
                         String email = result.getString("email");
-                        return new UserData(new_username, password, email);
+                        return new UserData(newUsername, password, email);
                     }
                 }
             }
@@ -96,10 +94,10 @@ public class SQLUserDAO implements UserDAO{
             try (var getUserStatement = conn.prepareStatement(stmt)) {
                 try (ResultSet result = getUserStatement.executeQuery()) {
                     while (result.next()) {
-                        String new_username = result.getString("username");
+                        String newUsername = result.getString("username");
                         String password = result.getString("password");
                         String email = result.getString("email");
-                        userList.add(new UserData(new_username, password, email));
+                        userList.add(new UserData(newUsername, password, email));
                     }
                 }
             }

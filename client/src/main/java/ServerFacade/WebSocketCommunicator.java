@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import ui.MainMenu;
-import ui.UIUtils;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
@@ -15,7 +14,6 @@ import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
 import java.net.URI;
-import java.util.Scanner;
 
 public class WebSocketCommunicator extends Endpoint {
 
@@ -53,50 +51,32 @@ public class WebSocketCommunicator extends Endpoint {
     }
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor playerColor) {
-        try {
-            send(gson.toJson(new JoinPlayer(authToken, gameID, playerColor)));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        send(gson.toJson(new JoinPlayer(authToken, gameID, playerColor)));
     }
     public void joinObserver(String authToken, int gameID) {
-        try {
-            send(gson.toJson(new JoinObserver(authToken, gameID)));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        send(gson.toJson(new JoinObserver(authToken, gameID)));
     }
 
     public void leave(String authToken, int gameID) {
-        try {
-            send(gson.toJson(new Leave(authToken, gameID)));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        send(gson.toJson(new Leave(authToken, gameID)));
     }
 
     public void makeMove(String authToken, int gameID, ChessMove move) {
-        try {
-            send(gson.toJson(new MakeMove(authToken, gameID, move)));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        send(gson.toJson(new MakeMove(authToken, gameID, move)));
     }
     public void resign(String authToken, int gameID) {
+        send(gson.toJson(new Resign(authToken, gameID)));
+    }
+
+    public void send(String msg) {
         try {
-            send(gson.toJson(new Resign(authToken, gameID)));
+            this.session.getBasicRemote().sendText(msg);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
-    }
     @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-
-    }
+    public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
     public static Gson createSerializer() {
         GsonBuilder gsonBuilder = new GsonBuilder();
