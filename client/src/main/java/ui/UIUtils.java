@@ -24,8 +24,6 @@ public class UIUtils {
             for (ChessMove move: validMoves) {
                 validMoveBoard[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = true;
             }
-            System.out.println(validMoves);
-            System.out.println(Arrays.deepToString(validMoveBoard));
         }
 
         ChessBoard board = game.getBoard();
@@ -36,8 +34,7 @@ public class UIUtils {
         if (Objects.equals(color, ChessGame.TeamColor.BLACK)) { yInt = 1; yDir = 1; }
 
         System.out.println(SET_TEXT_COLOR_BLACK+SET_BG_COLOR_LIGHT_GREY);
-        if (color == ChessGame.TeamColor.WHITE) System.out.println("  h  g  f  e  d  c  b  a  ");
-        else System.out.println("  a  b  c  d  e  f  g  h  ");
+        System.out.println("  h  g  f  e  d  c  b  a  ");
 
         for (int y = yInt; abs(y-yInt) < 8; y+=yDir){
             System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + Integer.toString(9-y));
@@ -67,8 +64,7 @@ public class UIUtils {
                 squareColor = SET_BG_COLOR_WHITE;
             }
         }
-        if (color == ChessGame.TeamColor.WHITE) System.out.println("  h  g  f  e  d  c  b  a  ");
-        else System.out.println("  a  b  c  d  e  f  g  h  ");
+        System.out.println("  h  g  f  e  d  c  b  a  ");
 
     }
 

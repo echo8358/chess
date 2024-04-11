@@ -86,7 +86,16 @@ public class MainMenu {
 
     private static void joinGame() {
         String color = null;
-        int gameID = Integer.parseInt(input("Game ID: "));
+        int gameID = -1;
+        if (gamesList.isEmpty()) {
+            System.out.println("No games available. Why not create one?");
+            return;
+        }
+        gameID = Integer.parseInt(input("Game ID: "));
+        while (gameID < 0 || gameID >= gamesList.size()) {
+            System.out.println("That game is not available. Please try again.");
+            gameID = Integer.parseInt(input("Game ID: "));
+        }
         while (!Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")) {
             color = input("(WHITE) or (BLACK)?");
         }
@@ -99,6 +108,9 @@ public class MainMenu {
         } catch (Exception e) {
             System.out.println("Error: "+e.getMessage());
         }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignore) { }
         gameLoop(trueGameID);
     }
 
@@ -192,6 +204,9 @@ public class MainMenu {
             }
         }
         serverFacade.makeMove(auth.authToken(), gameID, move);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignore) { }
     }
 
     private static ChessMove parseMove(String moveString) {
